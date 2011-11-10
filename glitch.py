@@ -100,7 +100,11 @@ def OP_DUP(stack):
     return stack
 
 def OP_PEEK(stack):
-    raise NotImplementedError
+    a = stack[-1]
+    b = stack[-a-1]
+    stack.pop()
+    stack.append(b)
+    return stack
 
 def OP_SWAP(stack):
     a = stack.pop()
@@ -110,16 +114,32 @@ def OP_SWAP(stack):
     return stack
 
 def OP_LT(stack):
-    raise NotImplementedError
+    a = stack.pop()
+    b = stack.pop()
+    if (b < a):
+        stack.append(0xFFFFFFFF)
+    else:
+        stack.append(0)
+    return stack
+
 
 def OP_GT(stack):
-    raise NotImplementedError
+    a = stack.pop()
+    b = stack.pop()
+    if (b > a):
+        stack.append(0xFFFFFFFF)
+    else:
+        stack.append(0)
+    return stack
     
 def OP_EQ(stack):
-    raise NotImplementedError
-
-def OP_COUNT(stack):
-    raise NotImplementedError
+    a = stack.pop()
+    b = stack.pop()
+    if (b == a):
+        stack.append(0xFFFFFFFF)
+    else:
+        stack.append(0)
+    return stack
 
 
 CHARMAP = {
