@@ -25,7 +25,7 @@ if len(argv) == 1:
     exit(1)
 
 m = Melody(argv[1])
-stderr.write('Tokens: ' + str(m))
+stderr.write(str(m))
 
 i = 0
 while True:

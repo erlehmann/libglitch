@@ -174,11 +174,12 @@ class Melody:
 
         assert(type(melody) == str)
 
-        self.melody = melody
-        self.tokens = self._tokenize_(melody)
+        self.title = melody.split('!')[0]
+        self.melody = ''.join(melody.split('!')[1:])
+        self.tokens = self._tokenize_(self.melody)
 
     def __repr__(self):
-        return str(self.tokens) + '\n'
+        return self.title + ' (Tokens:' + str(self.tokens) + ')\n'
 
     def _tokenize_(self, string):
         tokens = []
