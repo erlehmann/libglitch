@@ -34,7 +34,10 @@ def OP_MUL(stack):
 def OP_DIV(stack):
     a = stack.pop()
     b = stack.pop()
-    stack.append(b / a)
+    try:
+        stack.append(b / a)
+    except ZeroDivisionError:
+        stack.append(0)
     return stack
 
 def OP_ADD(stack):
@@ -52,7 +55,10 @@ def OP_SUB(stack):
 def OP_MOD(stack):
     a = stack.pop()
     b = stack.pop()
-    stack.append(b % a)
+    try:
+        stack.append(b % a)
+    except ZeroDivisionError:
+        stack.append(0)
     return stack
 
 def OP_NEG(stack):
