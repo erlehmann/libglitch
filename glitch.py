@@ -186,7 +186,10 @@ class Melody:
 
         for char in string:
             try:
-                if (char in HEXDIGITS) and (tokens[-1] in HEXDIGITS):
+                if (char in HEXDIGITS) and (
+                    (tokens[-1] in HEXDIGITS) or
+                    (tokens[-1][-1] in HEXDIGITS)
+                ):
                     tokens[-1] += char
                 else:
                     tokens.append(char)
