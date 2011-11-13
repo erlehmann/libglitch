@@ -118,9 +118,11 @@ i = 0
 running = True
 while running:
     if ((time() - starttime)*8000 > i):  # no excess output
-        for k in range(40):
-            stdout.write(chr(m._compute_(i)))
+        buf = ''
+        for k in range(400):
+            buf += chr(m._compute_(i))
             i += 1
+        stdout.write(buf)
 
     for event in pygame.event.get():
         if event.type == pygame.KEYUP:
