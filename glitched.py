@@ -162,7 +162,7 @@ while running:
         elif event.type == pygame.QUIT:
             with open(argv[1], 'w') as f:
                 f.write(str(m) + '\n')
-                stderr.write(str(m) + ' saved.')
+                stderr.write(str(m) + ' saved.\n')
 
             running = False
 
