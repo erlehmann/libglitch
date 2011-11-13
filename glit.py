@@ -23,18 +23,25 @@ for i in [i+1 for i in range(8)]:
 j = Grid(3, 1)
 g.add(j, 0, 1)
 
-def reset():
+def _reset_():
     print 'reset'
 
 resetbutton = Button("Reset t")
-resetbutton.setCallback(reset)
+resetbutton.setCallback(_reset_)
 j.setField(resetbutton, 0, 0, (1, 1, 0, 0))
 
+running = True
+
+def _exit_():
+    global running
+    running = False
+
 exitbutton = Button("Exit")
-exitbutton.setCallback(exit)
+exitbutton.setCallback(_exit_)
 j.setField(exitbutton, 2, 0, (3, 1, 0, 0))
 
-g.run()
+g.draw()
+screen.refresh()
 
 screen.popWindow()
 screen.finish()
