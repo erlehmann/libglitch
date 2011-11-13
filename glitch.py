@@ -186,10 +186,13 @@ class Melody:
 
     def __repr__(self):
         lines = []
-        for i in range(8):  # Strips NOPs from end of lines for readability.
+        for i in range(len(self.lines)):  # Strips NOPs from end of lines for readability.
             lines.append(self.lines[i].strip('.'))
 
-        return '!'.join(lines).strip('!')
+        leadchar = ''
+        if not self.title:
+            leadchar = '!'
+        return leadchar + '!'.join(lines).strip('!')
 
     def _tokenize_(self, lines):
         tokens = []
