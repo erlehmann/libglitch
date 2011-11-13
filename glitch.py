@@ -185,7 +185,11 @@ class Melody:
         self.tokens = self._tokenize_(self.lines[1:])
 
     def __repr__(self):
-        return '!'.join(self.lines).strip('!') + '\n'
+        lines = []
+        for i in range(8):  # Strips NOPs from end of lines for readability.
+            lines.append(self.lines[i].strip('.'))
+
+        return '!'.join(lines).strip('!')
 
     def _tokenize_(self, lines):
         tokens = []
@@ -205,7 +209,7 @@ class Melody:
 
         return tokens
 
-    def _normalize_(self, lines):
+    def _expand_(self, lines):
         """
             Appends NOPs to eight lines for easy editing.
         """
@@ -214,13 +218,6 @@ class Melody:
                 self.lines[i] = (self.lines[i] + (16*'.'))[:16]
             except IndexError:
                 self.lines.append(16*'.')
-
-    def _strip_(self, lines):
-        """
-            Strips NOPs from end of lines for saving.
-        """
-        for i in range(8):
-            self.lines[i] = self.lines[i].strip('.')
 
     def _compute_(self, t):
         self.stack = [0] * 0xFF     

@@ -17,6 +17,7 @@
 #       MA 02110-1301, USA.
 
 from sys import argv, stderr, stdout
+from time import time
 
 import pygame
 import glitch
@@ -80,7 +81,7 @@ with open(argv[1]) as f:
     input = f.read().replace('\n', '')
     m = glitch.Melody(input)
 
-m._normalize_(m.lines)
+m._expand_(m.lines)
 
 pygame.init()
 
@@ -112,8 +113,15 @@ def redraw():
 
 redraw()
 
+starttime = time()
+i = 0
 running = True
 while running:
+    if ((time() - starttime)*8000 > i):  # no excess output
+        for k in range(40):
+            stdout.write(chr(m._compute_(i)))
+            i += 1
+
     for event in pygame.event.get():
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -146,16 +154,17 @@ while running:
                 newchar = KEYORDER[index]
 
                 m.lines[row+1] = line[:column] + newchar + line[column+1:]
+                m.tokens = m._tokenize_(m.lines)
+                stderr.write('Now playing: ' + str(m) + '\n')
 
             redraw()
 
         elif event.type == pygame.QUIT:
             with open(argv[1], 'w') as f:
-                m._strip_(m.lines)
-                f.write(str(m))
+                f.write(str(m) + '\n')
+                stderr.write(str(m) + ' saved.')
 
             running = False
 
     pygame.display.flip()
-    pygame.time.wait(25)
     
