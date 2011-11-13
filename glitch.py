@@ -106,7 +106,7 @@ def OP_DUP(stack):
     return stack
 
 def OP_PEEK(stack):
-    a = stack[-1]
+    a = stack[-1] % 256
     b = stack[-a-1]
     stack.pop()
     stack.append(b)
