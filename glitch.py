@@ -216,7 +216,7 @@ class Melody:
         """
             Appends NOPs to eight lines for easy editing.
         """
-        for i in range(8):
+        for i in range(9):
             try:
                 self.lines[i] = (self.lines[i] + (16*'.'))[:16]
             except IndexError:
