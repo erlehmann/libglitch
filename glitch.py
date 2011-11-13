@@ -180,29 +180,47 @@ class Melody:
 
         assert(type(melody) == str)
 
-        self.title = melody.split('!')[0]
-        self.melody = ''.join(melody.split('!')[1:])
-        self.tokens = self._tokenize_(self.melody)
+        self.lines = melody.split('!')
+        self.title = self.lines[0]
+        self.tokens = self._tokenize_(self.lines[1:])
 
     def __repr__(self):
-        return self.title + ' (Tokens:' + str(self.tokens) + ')\n'
+        return '!'.join(self.lines).strip('!') + '\n'
 
-    def _tokenize_(self, string):
+    def _tokenize_(self, lines):
         tokens = []
 
-        for char in string:
-            try:
-                if (char in HEXDIGITS) and (
-                    (tokens[-1] in HEXDIGITS) or
-                    (tokens[-1][-1] in HEXDIGITS)
-                ):
-                    tokens[-1] += char
-                else:
-                    tokens.append(char)
-            except IndexError:
-                pass  # first character
+        for line in lines:
+            for char in line:
+                try:
+                    if (char in HEXDIGITS) and (
+                        (tokens[-1] in HEXDIGITS) or
+                        (tokens[-1][-1] in HEXDIGITS)
+                    ):
+                        tokens[-1] += char
+                    else:
+                        tokens.append(char)
+                except IndexError:
+                    pass  # first character
 
         return tokens
+
+    def _normalize_(self, lines):
+        """
+            Appends NOPs to eight lines for easy editing.
+        """
+        for i in range(8):
+            try:
+                self.lines[i] = (self.lines[i] + (16*'.'))[:16]
+            except IndexError:
+                self.lines.append(16*'.')
+
+    def _strip_(self, lines):
+        """
+            Strips NOPs from end of lines for saving.
+        """
+        for i in range(8):
+            self.lines[i] = self.lines[i].strip('.')
 
     def _compute_(self, t):
         self.stack = [0] * 0xFF     
