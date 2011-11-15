@@ -157,6 +157,7 @@ while running:
 
                 m.lines[row+1] = line[:column] + newchar + line[column+1:]
                 m.tokens = m._tokenize_(m.lines[1:])
+                m._reset_()
                 stderr.write('Now playing: ' + str(m) + '\n')
 
             redraw()

@@ -183,6 +183,7 @@ class Melody:
         self.lines = melody.split('!')
         self.title = self.lines[0]
         self.tokens = self._tokenize_(self.lines[1:])
+        self._reset_()
 
     def __repr__(self):
         lines = []
@@ -193,6 +194,9 @@ class Melody:
         if not self.title:
             leadchar = '!'
         return leadchar + '!'.join(lines).strip('!')
+
+    def _reset_(self):
+        self.stack = [0] * 0xFF
 
     def _tokenize_(self, lines):
         tokens = []
@@ -223,8 +227,6 @@ class Melody:
                 self.lines.append(16*'.')
 
     def _compute_(self, t):
-        self.stack = [0] * 0xFF     
-
         for token in self.tokens:
             if not token in OPCODES:  # not an opcode, must be a number
                 self.stack.append(int(token, 16))
