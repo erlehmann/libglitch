@@ -90,7 +90,7 @@ screen = pygame.display.set_mode((WIDTH*GRID, HEIGHT*GRID + TOPMARGIN*GRID), pyg
 tileset = pygame.transform.scale(
     pygame.image.load('tileset.png'),
     (8*GRID, 7*GRID)
-)
+).convert()
 
 curpos = [0, 0]
 
@@ -101,7 +101,8 @@ def tile(char):
     try:
         return tilecache[char]
     except KeyError:
-        tile = pygame.Surface((GRID, GRID), pygame.SRCALPHA + pygame.HWSURFACE)
+        tile = pygame.Surface((GRID, GRID), pygame.HWSURFACE).convert()
+        tile.set_colorkey((0, 0, 0))
         x = GRID * TILEMAP[char][0]
         y = GRID * TILEMAP[char][1]
         tile.blit(tileset, (0, 0), (x, y, GRID, GRID))
@@ -109,13 +110,15 @@ def tile(char):
         return tile
 
 def draw_controls():
-    for i in range(HEIGHT):
-        for j in range(WIDTH):
-            screen.blit(tile('.'), (j*GRID, i*GRID + TOPMARGIN*GRID))
+    screen.fill(
+        (253, 246, 227),  # Solarized Base03
+        (0, TOPMARGIN*GRID, WIDTH*GRID, HEIGHT*GRID + TOPMARGIN*GRID)
+    )
 
     for i, line in enumerate(m.lines[1:]):
         for j, char in enumerate(line):
-            screen.blit(tile(char), (j*GRID, i*GRID + TOPMARGIN*GRID))
+            if (char != '.'):  # NOP, not drawn
+                screen.blit(tile(char), (j*GRID, i*GRID + TOPMARGIN*GRID))
 
     screen.blit(tile('CURSOR'), (curpos[0]*GRID, curpos[1]*GRID + TOPMARGIN*GRID))
     pygame.display.update((0, TOPMARGIN*GRID, WIDTH*GRID, HEIGHT*GRID + TOPMARGIN*GRID))
