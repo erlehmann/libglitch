@@ -137,12 +137,12 @@ def draw_ypattern(buf, target):
     global ypattern
     for x, sample in enumerate(buf): # shadow
         y = ord(sample)
-        ypattern.set_at((127, 128-y), (7, 54, 66))    # Solarized Base02
-        ypattern.set_at((126, 128-y), (7, 54, 66))    # Solarized Base02
+        ypattern.set_at((127, 128-y/2), (7, 54, 66))    # Solarized Base02
+        ypattern.set_at((126, 128-y/2), (7, 54, 66))    # Solarized Base02
     for x, sample in enumerate(buf):
         y = ord(sample)
-        ypattern.set_at((127, 127-y), (220, 50, 47))  # Solarized Red
-        ypattern.set_at((126, 127-y), (220, 50, 47))  # Solarized Red
+        ypattern.set_at((127, 127-y/2), (220, 50, 47))  # Solarized Red
+        ypattern.set_at((126, 127-y/2), (220, 50, 47))  # Solarized Red
     target.blit(ypattern, (0, 0), (0, 0, 255, 255))
     ypattern.scroll(-2, 0)
 
