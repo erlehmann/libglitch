@@ -231,8 +231,8 @@ class Melody:
                         tokens[-1] += char
                     else:
                         tokens.append(char)
-                except IndexError:
-                    pass  # first character
+                except IndexError:  # first character is HEXDIGIT
+                    tokens.append(char)
 
         return tokens
 
