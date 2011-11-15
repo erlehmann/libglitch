@@ -21,14 +21,21 @@ from sys import stderr
 OPCODES = '.abcdefghijklmnopqrstuvwxyzGHIJKLMNOPQRSTUVWXYZ'
 HEXDIGITS = '0123456789ABCDEF'
 
+def OP_PUSH(stack, value):  # used internally
+    stack = stack[1:]
+    stack.append(value)
+    return stack
+
 def OP_DROP(stack):
     stack.pop()
+    stack.insert(0, 0)
     return stack
 
 def OP_MUL(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b * a)
+    stack.insert(0, 0)
     return stack
 
 def OP_DIV(stack):
@@ -38,18 +45,21 @@ def OP_DIV(stack):
         stack.append(b / a)
     except ZeroDivisionError:
         stack.append(0)
+    stack.insert(0, 0)
     return stack
 
 def OP_ADD(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b + a)
+    stack.insert(0, 0)
     return stack
 
 def OP_SUB(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b - a)
+    stack.insert(0, 0)
     return stack
 
 def OP_MOD(stack):
@@ -59,6 +69,7 @@ def OP_MOD(stack):
         stack.append(b % a)
     except ZeroDivisionError:
         stack.append(0)
+    stack.insert(0, 0)
     return stack
 
 def OP_NEG(stack):
@@ -70,30 +81,35 @@ def OP_LSHIFT(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b << a)
+    stack.insert(0, 0)
     return stack
     
 def OP_RSHIFT(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b >> a)
+    stack.insert(0, 0)
     return stack
     
 def OP_AND(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b & a)
+    stack.insert(0, 0)
     return stack
 
 def OP_OR(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b | a)
+    stack.insert(0, 0)
     return stack
 
 def OP_XOR(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b ^ a)
+    stack.insert(0, 0)
     return stack
 
 def OP_NOT(stack):
@@ -102,6 +118,7 @@ def OP_NOT(stack):
     return stack
 
 def OP_DUP(stack):
+    stack = stack[1:]
     stack.append(stack[-1])
     return stack
 
@@ -126,6 +143,7 @@ def OP_LT(stack):
         stack.append(0xFFFFFFFF)
     else:
         stack.append(0)
+    stack.insert(0, 0)
     return stack
 
 
@@ -136,6 +154,7 @@ def OP_GT(stack):
         stack.append(0xFFFFFFFF)
     else:
         stack.append(0)
+    stack.insert(0, 0)
     return stack
     
 def OP_EQ(stack):
@@ -145,6 +164,7 @@ def OP_EQ(stack):
         stack.append(0xFFFFFFFF)
     else:
         stack.append(0)
+    stack.insert(0, 0)
     return stack
 
 
@@ -196,7 +216,7 @@ class Melody:
         return leadchar + '!'.join(lines).strip('!')
 
     def _reset_(self):
-        self.stack = [0] * 0xFF
+        self.stack = [0] * 0x100
 
     def _tokenize_(self, lines):
         tokens = []
@@ -229,16 +249,16 @@ class Melody:
     def _compute_(self, t):
         for token in self.tokens:
             if not token in OPCODES:  # not an opcode, must be a number
-                self.stack.append(int(token, 16))
+                self.stack = OP_PUSH(self.stack, (int(token, 16)))
             elif (token == '.'):  # NOP
                 pass
             elif (token == 'a'):  # OP_T
-                self.stack.append(t)
+                self.stack = OP_PUSH(self.stack, t)
             else:
                 try:
                     self.stack = CHARMAP[token](self.stack)
                 except KeyError:
                     stderr.write(token + ' not implemented, ignored.\n')
 
-        return self.stack.pop() & 0xFF
+        return self.stack[-1] & 0xFF
 
