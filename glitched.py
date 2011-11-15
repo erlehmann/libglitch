@@ -115,7 +115,8 @@ def draw_controls():
 
 draw_controls()
 
-valuepattern = pygame.Surface((128, 128), pygame.SRCALPHA + pygame.HWSURFACE)
+valuepattern = pygame.Surface((128, 128), pygame.HWSURFACE)
+valuepattern.convert()
 
 def draw_valuepattern(buf, target):
     """
@@ -128,7 +129,9 @@ def draw_valuepattern(buf, target):
     target.blit(valuepattern, (0, 0), (0, 0, 127, 127), pygame.BLEND_ADD)
     valuepattern.scroll(-1, 0)
 
-ypattern = pygame.Surface((136, 128), pygame.SRCALPHA + pygame.HWSURFACE)
+ypattern = pygame.Surface((136, 128), pygame.HWSURFACE)
+ypattern.convert()
+ypattern.set_colorkey((0, 0, 0))
 
 def draw_ypattern(buf, target):
     """
@@ -156,7 +159,8 @@ def draw_local(buf, target):
         target.set_at((x/2, 127-y/2), (38, 139, 210))  # Solarized Blue
 
 def draw_graph(buf):
-    graph = pygame.Surface((128, 128), pygame.SRCALPHA + pygame.HWSURFACE)
+    graph = pygame.Surface((128, 128), pygame.HWSURFACE)
+    graph.convert()
     graph.fill((133, 153, 0))  # Solarized Green
     draw_valuepattern(buf, graph)
     draw_ypattern(buf, graph)
