@@ -94,12 +94,19 @@ tileset = pygame.transform.scale(
 
 curpos = [0, 0]
 
+tilecache = {}
+
 def tile(char):
-    tile = pygame.Surface((GRID, GRID), pygame.SRCALPHA + pygame.HWSURFACE)
-    x = GRID * TILEMAP[char][0]
-    y = GRID * TILEMAP[char][1]
-    tile.blit(tileset, (0, 0), (x, y, GRID, GRID))
-    return tile
+    global tilecache
+    try:
+        return tilecache[char]
+    except KeyError:
+        tile = pygame.Surface((GRID, GRID), pygame.SRCALPHA + pygame.HWSURFACE)
+        x = GRID * TILEMAP[char][0]
+        y = GRID * TILEMAP[char][1]
+        tile.blit(tileset, (0, 0), (x, y, GRID, GRID))
+        tilecache[char] = tile
+        return tile
 
 def draw_controls():
     for i in range(HEIGHT):
