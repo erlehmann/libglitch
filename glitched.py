@@ -136,7 +136,7 @@ def draw_valuepattern(buf, target):
     for x, sample in enumerate(buf):
         y = ord(sample)
         valuepattern.set_at((127, 127-x/2), (y, y, y))
-    target.blit(valuepattern, (0, 0), (0, 0, 127, 127), pygame.BLEND_ADD)
+    target.blit(valuepattern, (0, 0), (0, 0, 128, 128), pygame.BLEND_ADD)
     valuepattern.scroll(-1, 0)
 
 ypattern = pygame.Surface((136, 128), pygame.HWSURFACE)
@@ -156,7 +156,7 @@ def draw_ypattern(buf, target):
         y = ord(sample)
         ypattern.set_at((127, 127-y/2), (220, 50, 47))  # Solarized Red
         ypattern.set_at((126, 127-y/2), (220, 50, 47))  # Solarized Red
-    target.blit(ypattern, (0, 0), (0, 0, 255, 255))
+    target.blit(ypattern, (0, 0), (0, 0, 128, 128))
     ypattern.scroll(-2, 0)
 
 def draw_local(buf, target):
