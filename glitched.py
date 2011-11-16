@@ -159,14 +159,22 @@ def draw_ypattern(buf, target):
     target.blit(ypattern, (0, 0), (0, 0, 128, 128))
     ypattern.scroll(-2, 0)
 
+oldy = 0
+
 def draw_local(buf, target):
     """
     Draws the local wave (256 samples).
     """
+    global oldy
     for x, sample in enumerate(buf):
         y = ord(sample)
-        target.set_at((x/2, 128-y/2), (7, 54, 66))   # shadow
-        target.set_at((x/2, 127-y/2), (38, 139, 210))  # Solarized Blue
+        pygame.draw.line(target, (7, 54, 66), (x/2, 128-y/2),
+            (x/2, 128-oldy/2))  # shadow
+        pygame.draw.line(target, (7, 54, 66), (x/2+1, 128-y/2),
+            (x/2+1, 128-oldy/2))  # shadow
+        pygame.draw.line(target, (38, 139, 210), (x/2, 127-y/2),
+            (x/2, 127-oldy/2))  # Solarized Blue
+        oldy = y
 
 def draw_graph(buf):
     graph = pygame.Surface((128, 128), pygame.HWSURFACE)
