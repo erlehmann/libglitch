@@ -222,6 +222,7 @@ class Melody:
         tokens = []
 
         for line in lines:
+            assert(len(line) <= 16)  # only 16 characters per line allowed
             for char in line:
                 try:
                     if (char in HEXDIGITS) and (
