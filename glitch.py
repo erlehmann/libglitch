@@ -22,7 +22,7 @@ OPCODES = '.abcdefghijklmnopqrstuvwxyzGHIJKLMNOPQRSTUVWXYZ'
 HEXDIGITS = '0123456789ABCDEF'
 
 def OP_PUSH(stack, value):  # used internally
-    stack = stack[1:]
+    del stack[0]
     stack.append(value)
     return stack
 
