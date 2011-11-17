@@ -17,6 +17,7 @@
 #       MA 02110-1301, USA.
 
 from sys import stderr
+from collections import deque
 
 OPCODES = '.abcdefghijklmnopqrstuvwxyzGHIJKLMNOPQRSTUVWXYZ'
 HEXDIGITS = '0123456789ABCDEF'
@@ -28,14 +29,14 @@ def OP_PUSH(stack, value):  # used internally
 
 def OP_DROP(stack):
     stack.pop()
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 def OP_MUL(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b * a)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 def OP_DIV(stack):
@@ -45,21 +46,21 @@ def OP_DIV(stack):
         stack.append(b / a)
     except ZeroDivisionError:
         stack.append(0)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 def OP_ADD(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b + a)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 def OP_SUB(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b - a)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 def OP_MOD(stack):
@@ -69,7 +70,7 @@ def OP_MOD(stack):
         stack.append(b % a)
     except ZeroDivisionError:
         stack.append(0)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 def OP_NEG(stack):
@@ -81,35 +82,35 @@ def OP_LSHIFT(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b << a)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
     
 def OP_RSHIFT(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b >> a)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
     
 def OP_AND(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b & a)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 def OP_OR(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b | a)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 def OP_XOR(stack):
     a = stack.pop()
     b = stack.pop()
     stack.append(b ^ a)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 def OP_NOT(stack):
@@ -143,7 +144,7 @@ def OP_LT(stack):
         stack.append(0xFFFFFFFF)
     else:
         stack.append(0)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 
@@ -154,7 +155,7 @@ def OP_GT(stack):
         stack.append(0xFFFFFFFF)
     else:
         stack.append(0)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
     
 def OP_EQ(stack):
@@ -164,7 +165,7 @@ def OP_EQ(stack):
         stack.append(0xFFFFFFFF)
     else:
         stack.append(0)
-    stack.insert(0, 0)
+    stack.appendleft(0)
     return stack
 
 
@@ -216,7 +217,7 @@ class Melody:
         return leadchar + '!'.join(lines).strip('!')
 
     def _reset_(self):
-        self.stack = [0] * 0x100
+        self.stack = deque([0] * 0x100)
 
     def _tokenize_(self, lines):
         tokens = []
