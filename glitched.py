@@ -30,6 +30,8 @@ TILESIZE = 11
 SCALE = 4
 GRID = TILESIZE * SCALE
 
+BUFSIZE = 256
+
 TILEMAP = {
     '0': (0, 0),
     '1': (1, 0),
@@ -133,8 +135,7 @@ def draw_valuepattern(buf, target):
     Draws a pattern with color determined by sample.
     """
     global valuepattern
-    for x, sample in enumerate(buf):
-        y = ord(sample)
+    for x, y in enumerate(buf):
         valuepattern.set_at((127, 127-x/2), (y, y, y))
     target.blit(valuepattern, (0, 0), (0, 0, 128, 128), pygame.BLEND_ADD)
     valuepattern.scroll(-1, 0)
@@ -148,12 +149,10 @@ def draw_ypattern(buf, target):
     Draws a pattern with y coordinate determined by sample.
     """
     global ypattern
-    for x, sample in enumerate(buf): # shadow
-        y = ord(sample)
+    for x, y in enumerate(buf): # shadow
         ypattern.set_at((127, 128-y/2), (7, 54, 66))    # Solarized Base02
         ypattern.set_at((126, 128-y/2), (7, 54, 66))    # Solarized Base02
-    for x, sample in enumerate(buf):
-        y = ord(sample)
+    for x, y in enumerate(buf):
         ypattern.set_at((127, 127-y/2), (220, 50, 47))  # Solarized Red
         ypattern.set_at((126, 127-y/2), (220, 50, 47))  # Solarized Red
     target.blit(ypattern, (0, 0), (0, 0, 128, 128))
@@ -166,8 +165,7 @@ def draw_local(buf, target):
     Draws the local wave (256 samples).
     """
     global oldy
-    for x, sample in enumerate(buf):
-        y = ord(sample)
+    for x, y in enumerate(buf):
         pygame.draw.line(target, (7, 54, 66), (x/2, 128-y/2),
             (x/2, 128-oldy/2))  # shadow
         pygame.draw.line(target, (7, 54, 66), (x/2+1, 128-y/2),
@@ -193,13 +191,11 @@ i = 0
 running = True
 while running:
     if ((time() - starttime)*8000 > i):  # no excess output
-        buf = ''
-        for k in range(256):
-            buf += chr(m._compute_(i))
-            i += 1
-        stdout.write(buf)
+        buf = bytearray(m._compute_(j) for j in xrange(i, i+BUFSIZE))
+        stdout.write(str(buf))
+        i += BUFSIZE
 
-        if ((time() - starttime)*8000 < i+256):  # discard frames if necessary
+        if ((time() - starttime)*8000 < i+BUFSIZE):  # discard frames if necessary
             draw_graph(buf)
 
     for event in pygame.event.get():
