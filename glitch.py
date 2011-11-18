@@ -119,7 +119,7 @@ def OP_NOT(stack):
     return stack
 
 def OP_DUP(stack):
-    stack = stack[1:]
+    del stack[0]
     stack.append(stack[-1])
     return stack
 
