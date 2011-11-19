@@ -27,6 +27,13 @@ def OP_PUSH(stack, value):  # used internally
     stack.append(value)
     return stack
 
+def OP_PUT(stack):
+    a = stack[-1] % 256
+    stack[-a-1] = stack[-2]
+    stack.pop()
+    stack.appendleft(0)
+    return stack
+
 def OP_DROP(stack):
     stack.pop()
     stack.appendleft(0)
@@ -176,6 +183,7 @@ def OP_EQ(stack):
 
 
 CHARMAP = {
+    'b': OP_PUT,
     'c': OP_DROP,
     'd': OP_MUL,
     'e': OP_DIV,

@@ -50,7 +50,7 @@ TILEMAP = {
     'E': (6, 1),
     'F': (7, 1),
     'a': (0, 2),
-    'b': (0, 1),
+    'b': (1, 2),
     'c': (2, 2),
     'd': (3, 2),
     'e': (4, 2),
@@ -74,7 +74,7 @@ TILEMAP = {
     'CURSOR': (7, 6)
 }
 
-KEYORDER = '0123456789ABCDEFacdefghijklmnopqrstu.'
+KEYORDER = '0123456789ABCDEFabcdefghijklmnopqrstu.'
 
 if len(argv) != 2:
     stderr.write('Usage: glitched.py [glitchfile]\n')
