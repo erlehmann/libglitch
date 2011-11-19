@@ -231,7 +231,7 @@ class Melody:
         return leadchar + '!'.join(lines).strip('!')
 
     def _reset_(self):
-        self.stack = deque([0] * 0x100)
+        self.stack = deque([0] * 256)
 
     def _tokenize_(self, lines):
         tokens = []
