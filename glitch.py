@@ -81,15 +81,21 @@ def OP_NEG(stack):
 def OP_LSHIFT(stack):
     a = stack.pop()
     b = stack.pop()
-    stack.append(b << a)
-    stack.appendleft(0)
+    try:
+        stack.append(b << a)
+        stack.appendleft(0)
+    except ValueError:  # negative shift count
+        stack = OP_RSHIFT(stack)
     return stack
     
 def OP_RSHIFT(stack):
     a = stack.pop()
     b = stack.pop()
-    stack.append(b >> a)
-    stack.appendleft(0)
+    try:
+        stack.append(b >> a)
+        stack.appendleft(0)
+    except ValueError:  # negative shift count
+        stack = OP_LSHIFT(stack)
     return stack
     
 def OP_AND(stack):
