@@ -129,7 +129,7 @@ def OP_DUP(stack):
     stack.append(stack[-1])
     return stack
 
-def OP_PEEK(stack):
+def OP_GET(stack):
     a = stack[-1] % 256
     b = stack[-a-1]
     stack.pop()
@@ -190,7 +190,7 @@ CHARMAP = {
     'n': OP_XOR,
     'o': OP_NOT,
     'p': OP_DUP,
-    'q': OP_PEEK,
+    'q': OP_GET,
     'r': OP_SWAP,
     's': OP_LT,
     't': OP_GT,
