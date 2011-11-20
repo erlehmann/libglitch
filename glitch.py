@@ -50,10 +50,6 @@ class RingBufferStack(deque):
         'u': self.OP_EQ,
         }
 
-    def OP_PUSH(self, value):
-        self.append(value)
-        self.popleft()
-
     def OP_POP(self):
         self.rotate(1)
 
@@ -266,11 +262,13 @@ class Melody:
     def _compute_(self, t):
         for token in self.tokens:
             if not token in OPCODES:  # not an opcode, must be a number
-                self.stack.OP_PUSH((int(token, 16)))
+                self.stack.append((int(token, 16)))
+                self.stack.popleft()
             elif (token == '.'):  # NOP
                 pass
             elif (token == 'a'):  # OP_T
-                self.stack.OP_PUSH(t)
+                self.stack.append(t)
+                self.stack.popleft()
             else:
                 try:
                     self.stack.CHARMAP[token]()
