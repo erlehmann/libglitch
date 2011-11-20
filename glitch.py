@@ -277,6 +277,7 @@ class Melody:
                 except KeyError:
                     stderr.write(token + ' not implemented, ignored.\n')
 
+        result = self.stack[-1]
         self.stack.OP_POP()
-        return self.stack[-1] & 0xFF
+        return result & 0xFF 
 
