@@ -22,188 +22,189 @@ from collections import deque
 OPCODES = '.abcdefghijklmnopqrstuvwxyzGHIJKLMNOPQRSTUVWXYZ'
 HEXDIGITS = '0123456789ABCDEF'
 
-def OP_PUSH(stack, value):  # used internally
-    del stack[0]
-    stack.append(value)
-    return stack
+class RingBufferStack(deque):
+    def __init__(self, size):
+        deque.__init__(self)
+        self.extend([0] * size)
 
-def OP_PUT(stack):
-    a = stack[-1] % 256
-    stack[-a-1] = stack[-2]
-    stack.pop()
-    stack.appendleft(0)
-    return stack
+        self.CHARMAP = {
+        'b': self.OP_PUT,
+        'c': self.OP_DROP,
+        'd': self.OP_MUL,
+        'e': self.OP_DIV,
+        'f': self.OP_ADD,
+        'g': self.OP_SUB,
+        'h': self.OP_MOD,
+        'i': self.OP_NEG,
+        'j': self.OP_LSHIFT,
+        'k': self.OP_RSHIFT,
+        'l': self.OP_AND,
+        'm': self.OP_OR,
+        'n': self.OP_XOR,
+        'o': self.OP_NOT,
+        'p': self.OP_DUP,
+        'q': self.OP_GET,
+        'r': self.OP_SWAP,
+        's': self.OP_LT,
+        't': self.OP_GT,
+        'u': self.OP_EQ,
+        }
 
-def OP_DROP(stack):
-    stack.pop()
-    stack.appendleft(0)
-    return stack
+    def OP_PUSH(self, value):
+        self.append(value)
+        self.popleft()
 
-def OP_MUL(stack):
-    a = stack.pop()
-    b = stack.pop()
-    stack.append(b * a)
-    stack.appendleft(0)
-    return stack
+    def OP_POP(self):
+        self.rotate(1)
 
-def OP_DIV(stack):
-    a = stack.pop()
-    b = stack.pop()
-    try:
-        stack.append(b / a)
-    except ZeroDivisionError:
-        stack.append(0)
-    stack.appendleft(0)
-    return stack
+    def OP_PUT(self):
+        a = self[-1] % 256
+        self[-a-1] = self[-2]
+        self.rotate(1)
 
-def OP_ADD(stack):
-    a = stack.pop()
-    b = stack.pop()
-    stack.append(b + a)
-    stack.appendleft(0)
-    return stack
+    def OP_DROP(self):
+        self.rotate(-1)
 
-def OP_SUB(stack):
-    a = stack.pop()
-    b = stack.pop()
-    stack.append(b - a)
-    stack.appendleft(0)
-    return stack
+    def OP_MUL(self):
+        a = self[-1]
+        b = self[-2]
+        self.rotate(2)
+        self.append(b * a)
+        self.popleft()
 
-def OP_MOD(stack):
-    a = stack.pop()
-    b = stack.pop()
-    try:
-        stack.append(b % a)
-    except ZeroDivisionError:
-        stack.append(0)
-    stack.appendleft(0)
-    return stack
+    def OP_DIV(self):
+        a = self[-1]
+        b = self[-2]
+        self.rotate(2)
+        try:
+            self.append(b / a)
+        except ZeroDivisionError:
+            self.append(0)
+        self.popleft()
 
-def OP_NEG(stack):
-    a = stack.pop()
-    stack.append(-a)
-    return stack
+    def OP_ADD(self):
+        a = self[-1]
+        b = self[-2]
+        self.rotate(2)
+        self.append(b + a)
+        self.popleft()
 
-def OP_LSHIFT(stack):
-    a = stack.pop()
-    b = stack.pop()
-    try:
-        stack.append(b << a)
-        stack.appendleft(0)
-    except ValueError:  # negative shift count
-        stack = OP_RSHIFT(stack)
-    return stack
-    
-def OP_RSHIFT(stack):
-    a = stack.pop()
-    b = stack.pop()
-    try:
-        stack.append(b >> a)
-        stack.appendleft(0)
-    except ValueError:  # negative shift count
-        stack = OP_LSHIFT(stack)
-    return stack
-    
-def OP_AND(stack):
-    a = stack.pop()
-    b = stack.pop()
-    stack.append(b & a)
-    stack.appendleft(0)
-    return stack
+    def OP_SUB(self):
+        a = self[-1]
+        b = self[-2]
+        self.rotate(2)
+        self.append(b - a)
+        self.popleft()
 
-def OP_OR(stack):
-    a = stack.pop()
-    b = stack.pop()
-    stack.append(b | a)
-    stack.appendleft(0)
-    return stack
+    def OP_MOD(self):
+        a = self[-1]
+        b = self[-2]
+        self.rotate(2)
+        try:
+            self.append(b % a)
+        except ZeroDivisionError:
+            self.append(0)
+        self.popleft()
+        return self
 
-def OP_XOR(stack):
-    a = stack.pop()
-    b = stack.pop()
-    stack.append(b ^ a)
-    stack.appendleft(0)
-    return stack
+    def OP_NEG(self):
+        a = self[-1]
+        self[-1] = -a
 
-def OP_NOT(stack):
-    a = stack.pop()
-    stack.append(~a)
-    return stack
+    def OP_LSHIFT(self):
+        a = self[-1]
+        b = self[-2]
+        self.rotate(2)
+        self.append(b << a)
+        self.popleft()
 
-def OP_DUP(stack):
-    del stack[0]
-    stack.append(stack[-1])
-    return stack
+    def OP_RSHIFT(self):
+        a = self[-1]
+        b = self[-2]
+        self.rotate(2)
+        self.append(b >> a)
+        self.popleft()
 
-def OP_GET(stack):
-    a = stack[-1] % 256
-    b = stack[-a-1]
-    stack.pop()
-    stack.append(b)
-    return stack
+    def OP_AND(self):
+        a = self[-1]
+        b = self[-2]
+        self.rotate(2)
+        self.append(b & a)
+        self.popleft()
+        return self
 
-def OP_SWAP(stack):
-    a = stack.pop()
-    b = stack.pop()
-    stack.append(a)
-    stack.append(b)
-    return stack
+    def OP_OR(self):
+        a = self.pop()
+        b = self.pop()
+        self.rotate(2)
+        self.append(b | a)
+        self.popleft()
 
-def OP_LT(stack):
-    a = stack.pop()
-    b = stack.pop()
-    if (b < a):
-        stack.append(0xFFFFFFFF)
-    else:
-        stack.append(0)
-    stack.appendleft(0)
-    return stack
+    def OP_XOR(self):
+        a = self.pop()
+        b = self.pop()
+        self.rotate(2)
+        self.append(b ^ a)
+        self.popleft()
 
+    def OP_NOT(self):
+        a = self[-1]
+        self[-1] = (~a)
 
-def OP_GT(stack):
-    a = stack.pop()
-    b = stack.pop()
-    if (b > a):
-        stack.append(0xFFFFFFFF)
-    else:
-        stack.append(0)
-    stack.appendleft(0)
-    return stack
-    
-def OP_EQ(stack):
-    a = stack.pop()
-    b = stack.pop()
-    if (b == a):
-        stack.append(0xFFFFFFFF)
-    else:
-        stack.append(0)
-    stack.appendleft(0)
-    return stack
+    def OP_DUP(self):
+        a = self[-1]
+        self.append(a)
+        self.popleft()
+
+    def OP_GET(self):
+        a = self[-1] % 256
+        b = self[-a-1]
+        self.rotate(1)
+        self.append(b)
+        self.popleft()
+
+    def OP_SWAP(self):
+        a = self[-1]
+        b = self[-2]
+        self[-2] = a
+        self[-1] = b
+        return self
+
+    def OP_LT(self):
+        a = self[-1]
+        b = self[-2]
+        self.rotate(2)
+        if (b < a):
+            self.append(0xFFFFFFFF)
+        else:
+            self.append(0)
+        self.popleft()
+        return self
 
 
-CHARMAP = {
-    'b': OP_PUT,
-    'c': OP_DROP,
-    'd': OP_MUL,
-    'e': OP_DIV,
-    'f': OP_ADD,
-    'g': OP_SUB,
-    'h': OP_MOD,
-    'i': OP_NEG,
-    'j': OP_LSHIFT,
-    'k': OP_RSHIFT,
-    'l': OP_AND,
-    'm': OP_OR,
-    'n': OP_XOR,
-    'o': OP_NOT,
-    'p': OP_DUP,
-    'q': OP_GET,
-    'r': OP_SWAP,
-    's': OP_LT,
-    't': OP_GT,
-    'u': OP_EQ,
-}
+    def OP_GT(self):
+        a = self[-1]
+        b = self[-2]
+        self.rotate(2)
+        if (b > a):
+            self.append(0xFFFFFFFF)
+        else:
+            self.append(0)
+        self.popleft()
+        return self
+
+    def OP_EQ(self):
+        a = self[-1]
+        b = self[-2]
+        if (b == a):
+            self.append(0xFFFFFFFF)
+        else:
+            self.append(0)
+        self.popleft()
+        return self
+
+    def tolist(self):
+        return list(self)
 
 
 class Melody:
@@ -231,7 +232,7 @@ class Melody:
         return leadchar + '!'.join(lines).strip('!')
 
     def _reset_(self):
-        self.stack = deque([0] * 256)
+        self.stack = RingBufferStack(256)
 
     def _tokenize_(self, lines):
         tokens = []
@@ -265,16 +266,17 @@ class Melody:
     def _compute_(self, t):
         for token in self.tokens:
             if not token in OPCODES:  # not an opcode, must be a number
-                self.stack = OP_PUSH(self.stack, (int(token, 16)))
+                self.stack.OP_PUSH((int(token, 16)))
             elif (token == '.'):  # NOP
                 pass
             elif (token == 'a'):  # OP_T
-                self.stack = OP_PUSH(self.stack, t)
+                self.stack.OP_PUSH(t)
             else:
                 try:
-                    self.stack = CHARMAP[token](self.stack)
+                    self.stack.CHARMAP[token]()
                 except KeyError:
                     stderr.write(token + ' not implemented, ignored.\n')
 
+        self.stack.OP_POP()
         return self.stack[-1] & 0xFF
 
