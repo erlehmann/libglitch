@@ -98,7 +98,7 @@ class Melody:
                 self.stack.rotate(1)
 
             elif (token == 'c'):  # OP_DROP
-                self.stack.rotate(-1)
+                self.stack.rotate(1)
 
             elif (token == 'd'):  # OP_MUL
                 a = self.stack[-1]
@@ -231,8 +231,7 @@ class Melody:
                     self.stack.append(0)
                 self.stack.popleft()
 
-
         result = self.stack[-1]
-        self.stack.rotate(1)  # implied OP_POP
+        self.stack.rotate(1)  # implied OP_DROP
         return result & 0xFF 
 
