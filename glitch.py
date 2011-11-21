@@ -21,7 +21,7 @@ from collections import deque
 
 OPCODES = '.abcdefghijklmnopqrstuvwxyzGHIJKLMNOPQRSTUVWXYZ'
 HEXDIGITS = '0123456789ABCDEF'
-
+MAXINT = 0xFFFFFFFF
 
 class Melody:
     def __init__(self, melody):
@@ -90,7 +90,7 @@ class Melody:
                 pass
 
             elif (token == 'a'):  # OP_T
-                stack.append(t)
+                stack.append(t & MAXINT)
                 stack.popleft()
 
             elif (token == 'b'):  # OP_PUT
@@ -105,14 +105,14 @@ class Melody:
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
-                stack.append(b * a)
+                stack.append((b * a) & MAXINT)
 
             elif (token == 'e'):  # OP_DIV
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
                 try:
-                    stack.append(b / a)
+                    stack.append((b / a) & MAXINT)
                 except ZeroDivisionError:
                     stack.append(0)
 
@@ -120,59 +120,59 @@ class Melody:
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
-                stack.append(b + a)
+                stack.append((b + a) & MAXINT)
 
             elif (token == 'g'):  # OP_SUB
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
-                stack.append(b - a)
+                stack.append((b - a) & MAXINT)
 
             elif (token == 'h'):  # OP_MOD
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
                 try:
-                    stack.append(b % a)
+                    stack.append((b % a) & MAXINT)
                 except ZeroDivisionError:
                     stack.append(0)
 
             elif (token == 'i'):  # OP_NEG
                 a = stack[-1]
-                stack[-1] = -a
+                stack[-1] = (-a) & MAXINT
 
             elif (token == 'j'):  # OP_LSHIFT
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
-                stack.append(b << a)
+                stack.append((b << a) & MAXINT)
 
             elif (token == 'k'):  # OP_RSHIFT
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
-                stack.append(b >> a)
+                stack.append((b >> a) & MAXINT)
 
             elif (token == 'l'):  # OP_AND
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
-                stack.append(b & a)
+                stack.append((b & a) & MAXINT)
 
             elif (token == 'm'):  # OP_OR
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
-                stack.append(b | a)
+                stack.append((b | a) & MAXINT)
 
             elif (token == 'n'):  # OP_XOR
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
-                stack.append(b ^ a)
+                stack.append((b ^ a) & MAXINT)
 
             elif (token == 'o'):  # OP_NOT
-                stack[-1] = (~stack[-1])
+                stack[-1] = (~stack[-1] & MAXINT)
 
             elif (token == 'p'):  # OP_DUP
                 stack.append(stack[-1])
@@ -193,7 +193,7 @@ class Melody:
                 b = stack[-1]
                 stack.rotate(1)
                 if (b < a):
-                    stack.append(0xFFFFFFFF)
+                    stack.append(MAXINT)
                 else:
                     stack.append(0)
 
@@ -202,7 +202,7 @@ class Melody:
                 b = stack[-1]
                 stack.rotate(1)
                 if (b > a):
-                    stack.append(0xFFFFFFFF)
+                    stack.append(MAXINT)
                 else:
                     stack.append(0)
 
@@ -211,7 +211,7 @@ class Melody:
                 b = stack[-1]
                 stack.rotate(1)
                 if (b == a):
-                    stack.append(0xFFFFFFFF)
+                    stack.append(MAXINT)
                 else:
                     stack.append(0)
 
