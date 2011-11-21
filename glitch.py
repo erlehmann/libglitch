@@ -167,15 +167,15 @@ class Melody:
                 self.stack.popleft()
 
             elif (token == 'm'):  # OP_OR
-                a = self.stack.pop()
-                b = self.stack.pop()
+                a = self.stack[-1]
+                b = self.stack[-2]
                 self.stack.rotate(2)
                 self.stack.append(b | a)
                 self.stack.popleft()
 
             elif (token == 'n'):  # OP_XOR
-                a = self.stack.pop()
-                b = self.stack.pop()
+                a = self.stack[-1]
+                b = self.stack[-2]
                 self.stack.rotate(2)
                 self.stack.append(b ^ a)
                 self.stack.popleft()
