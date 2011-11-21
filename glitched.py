@@ -33,7 +33,7 @@ TILESIZE = 11
 SCALE = 2
 GRID = TILESIZE * SCALE
 
-BUFSIZE = 256
+BUFSIZE = 512
 
 TILEMAP = {
     '0': (0, 0),
@@ -142,6 +142,7 @@ def draw_valuepattern(buf, target, drop_frame=False):
     if not drop_frame:
         for x, y in enumerate(buf):
             valuepattern.set_at((127, 127-x/2), (y, y, y))
+    target.fill((133, 153, 0))  # Solarized Green
     target.blit(valuepattern, (0, 0), (0, 0, 128, 128), pygame.BLEND_ADD)
     valuepattern.scroll(-1, 0)
 
@@ -188,10 +189,11 @@ def draw_local(buf, target, drop_frame=False):
 def draw_graph(buf, drop_frame=False):
     graph = pygame.Surface((128, 128), pygame.HWSURFACE)
     graph.convert()
-    graph.fill((133, 153, 0))  # Solarized Green
-    draw_valuepattern(buf, graph, drop_frame)
-    draw_ypattern(buf, graph, drop_frame)
-    draw_local(buf, graph, drop_frame)
+
+    for b in [buf[i:i+256] for i in xrange(0, len(buf), 256)]:
+        draw_valuepattern(b, graph, drop_frame)
+        draw_ypattern(b, graph, drop_frame)
+        draw_local(b, graph, drop_frame)
 
     graph = pygame.transform.scale(graph, (WIDTH*GRID, TOPMARGIN*GRID))
     screen.blit(graph, (0, 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
