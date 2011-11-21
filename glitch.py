@@ -22,186 +22,6 @@ from collections import deque
 OPCODES = '.abcdefghijklmnopqrstuvwxyzGHIJKLMNOPQRSTUVWXYZ'
 HEXDIGITS = '0123456789ABCDEF'
 
-class RingBufferStack(deque):
-    def __init__(self, size):
-        deque.__init__(self)
-        self.extend([0] * size)
-
-        self.CHARMAP = {
-        'b': self.OP_PUT,
-        'c': self.OP_DROP,
-        'd': self.OP_MUL,
-        'e': self.OP_DIV,
-        'f': self.OP_ADD,
-        'g': self.OP_SUB,
-        'h': self.OP_MOD,
-        'i': self.OP_NEG,
-        'j': self.OP_LSHIFT,
-        'k': self.OP_RSHIFT,
-        'l': self.OP_AND,
-        'm': self.OP_OR,
-        'n': self.OP_XOR,
-        'o': self.OP_NOT,
-        'p': self.OP_DUP,
-        'q': self.OP_GET,
-        'r': self.OP_SWAP,
-        's': self.OP_LT,
-        't': self.OP_GT,
-        'u': self.OP_EQ,
-        }
-
-    def OP_POP(self):
-        self.rotate(1)
-
-    def OP_PUT(self):
-        a = self[-1] % 256
-        self[-a-1] = self[-2]
-        self.rotate(1)
-
-    def OP_DROP(self):
-        self.rotate(-1)
-
-    def OP_MUL(self):
-        a = self[-1]
-        b = self[-2]
-        self.rotate(2)
-        self.append(b * a)
-        self.popleft()
-
-    def OP_DIV(self):
-        a = self[-1]
-        b = self[-2]
-        self.rotate(2)
-        try:
-            self.append(b / a)
-        except ZeroDivisionError:
-            self.append(0)
-        self.popleft()
-
-    def OP_ADD(self):
-        a = self[-1]
-        b = self[-2]
-        self.rotate(2)
-        self.append(b + a)
-        self.popleft()
-
-    def OP_SUB(self):
-        a = self[-1]
-        b = self[-2]
-        self.rotate(2)
-        self.append(b - a)
-        self.popleft()
-
-    def OP_MOD(self):
-        a = self[-1]
-        b = self[-2]
-        self.rotate(2)
-        try:
-            self.append(b % a)
-        except ZeroDivisionError:
-            self.append(0)
-        self.popleft()
-        return self
-
-    def OP_NEG(self):
-        a = self[-1]
-        self[-1] = -a
-
-    def OP_LSHIFT(self):
-        a = self[-1]
-        b = self[-2]
-        self.rotate(2)
-        self.append(b << a)
-        self.popleft()
-
-    def OP_RSHIFT(self):
-        a = self[-1]
-        b = self[-2]
-        self.rotate(2)
-        self.append(b >> a)
-        self.popleft()
-
-    def OP_AND(self):
-        a = self[-1]
-        b = self[-2]
-        self.rotate(2)
-        self.append(b & a)
-        self.popleft()
-        return self
-
-    def OP_OR(self):
-        a = self.pop()
-        b = self.pop()
-        self.rotate(2)
-        self.append(b | a)
-        self.popleft()
-
-    def OP_XOR(self):
-        a = self.pop()
-        b = self.pop()
-        self.rotate(2)
-        self.append(b ^ a)
-        self.popleft()
-
-    def OP_NOT(self):
-        a = self[-1]
-        self[-1] = (~a)
-
-    def OP_DUP(self):
-        a = self[-1]
-        self.append(a)
-        self.popleft()
-
-    def OP_GET(self):
-        a = self[-1] % 256
-        b = self[-a-1]
-        self.rotate(1)
-        self.append(b)
-        self.popleft()
-
-    def OP_SWAP(self):
-        a = self[-1]
-        b = self[-2]
-        self[-2] = a
-        self[-1] = b
-        return self
-
-    def OP_LT(self):
-        a = self[-1]
-        b = self[-2]
-        self.rotate(2)
-        if (b < a):
-            self.append(0xFFFFFFFF)
-        else:
-            self.append(0)
-        self.popleft()
-        return self
-
-
-    def OP_GT(self):
-        a = self[-1]
-        b = self[-2]
-        self.rotate(2)
-        if (b > a):
-            self.append(0xFFFFFFFF)
-        else:
-            self.append(0)
-        self.popleft()
-        return self
-
-    def OP_EQ(self):
-        a = self[-1]
-        b = self[-2]
-        if (b == a):
-            self.append(0xFFFFFFFF)
-        else:
-            self.append(0)
-        self.popleft()
-        return self
-
-    def tolist(self):
-        return list(self)
-
 
 class Melody:
     def __init__(self, melody):
@@ -228,7 +48,7 @@ class Melody:
         return leadchar + '!'.join(lines).strip('!')
 
     def _reset_(self):
-        self.stack = RingBufferStack(256)
+        self.stack = deque([0] * 256)
 
     def _tokenize_(self, lines):
         tokens = []
@@ -259,23 +79,160 @@ class Melody:
             except IndexError:
                 self.lines.append(16*'.')
 
-    def _compute_(self, t):
+    def _compute_(self, t, count=1):
         for token in self.tokens:
             if not token in OPCODES:  # not an opcode, must be a number
                 self.stack.append((int(token, 16)))
                 self.stack.popleft()
+
             elif (token == '.'):  # NOP
                 pass
+
             elif (token == 'a'):  # OP_T
                 self.stack.append(t)
                 self.stack.popleft()
-            else:
+
+            elif (token == 'b'):  # OP_PUT
+                a = self.stack[-1] % 256
+                self.stack[-a-1] = self.stack[-2]
+                self.stack.rotate(1)
+
+            elif (token == 'c'):  # OP_DROP
+                self.stack.rotate(-1)
+
+            elif (token == 'd'):  # OP_MUL
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack.rotate(2)
+                self.stack.append(b * a)
+                self.stack.popleft()
+
+            elif (token == 'e'):  # OP_DIV
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack.rotate(2)
                 try:
-                    self.stack.CHARMAP[token]()
-                except KeyError:
-                    stderr.write(token + ' not implemented, ignored.\n')
+                    self.stack.append(b / a)
+                except ZeroDivisionError:
+                    self.stack.append(0)
+                self.stack.popleft()
+
+            elif (token == 'f'):  # OP_ADD
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack.rotate(2)
+                self.stack.append(b + a)
+                self.stack.popleft()
+
+            elif (token == 'g'):  # OP_SUB
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack.rotate(2)
+                self.stack.append(b - a)
+                self.stack.popleft()
+
+            elif (token == 'h'):  # OP_MOD
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack.rotate(2)
+                try:
+                    self.stack.append(b % a)
+                except ZeroDivisionError:
+                    self.stack.append(0)
+                self.stack.popleft()
+
+            elif (token == 'i'):  # OP_NEG
+                a = self.stack[-1]
+                self.stack[-1] = -a
+
+            elif (token == 'j'):  # OP_LSHIFT
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack.rotate(2)
+                self.stack.append(b << a)
+                self.stack.popleft()
+
+            elif (token == 'k'):  # OP_RSHIFT
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack.rotate(2)
+                self.stack.append(b >> a)
+                self.stack.popleft()
+
+            elif (token == 'l'):  # OP_AND
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack.rotate(2)
+                self.stack.append(b & a)
+                self.stack.popleft()
+
+            elif (token == 'm'):  # OP_OR
+                a = self.stack.pop()
+                b = self.stack.pop()
+                self.stack.rotate(2)
+                self.stack.append(b | a)
+                self.stack.popleft()
+
+            elif (token == 'n'):  # OP_XOR
+                a = self.stack.pop()
+                b = self.stack.pop()
+                self.stack.rotate(2)
+                self.stack.append(b ^ a)
+                self.stack.popleft()
+
+            elif (token == 'o'):  # OP_NOT
+                a = self.stack[-1]
+                self.stack[-1] = (~a)
+
+            elif (token == 'p'):  # OP_DUP
+                a = self.stack[-1]
+                self.stack.append(a)
+                self.stack.popleft()
+
+            elif (token == 'q'):  # OP_GET
+                a = self.stack[-1] % 256
+                b = self.stack[-a-1]
+                self.stack.rotate(1)
+                self.stack.append(b)
+                self.stack.popleft()
+
+            elif (token == 'r'):  # OP_SWAP
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack[-2] = a
+                self.stack[-1] = b
+
+            elif (token == 's'):  # OP_LT
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack.rotate(2)
+                if (b < a):
+                    self.stack.append(0xFFFFFFFF)
+                else:
+                    self.stack.append(0)
+                self.stack.popleft()
+
+            elif (token == 't'):  # OP_GT
+                a = self.stack[-1]
+                b = self.stack[-2]
+                self.stack.rotate(2)
+                if (b > a):
+                    self.stack.append(0xFFFFFFFF)
+                else:
+                    self.stack.append(0)
+                self.stack.popleft()
+
+            elif (token == 'u'):  # OP_EQ
+                a = self.stack[-1]
+                b = self.stack[-2]
+                if (b == a):
+                    self.stack.append(0xFFFFFFFF)
+                else:
+                    self.stack.append(0)
+                self.stack.popleft()
+
 
         result = self.stack[-1]
-        self.stack.OP_POP()
+        self.stack.rotate(1)  # implied OP_POP
         return result & 0xFF 
 
