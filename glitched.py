@@ -77,6 +77,27 @@ TILEMAP = {
     'CURSOR': (7, 6)
 }
 
+KEYMAP = {
+    pygame.K_SPACE: '.',
+    pygame.K_t : 'a',
+    pygame.K_0 : '0',
+    pygame.K_1 : '1',
+    pygame.K_2 : '2',
+    pygame.K_3 : '3',
+    pygame.K_4 : '4',
+    pygame.K_5 : '5',
+    pygame.K_6 : '6',
+    pygame.K_7 : '7',
+    pygame.K_8 : '8',
+    pygame.K_9 : '9',
+    pygame.K_a : 'A',
+    pygame.K_b : 'B',
+    pygame.K_c : 'C',
+    pygame.K_d : 'D',
+    pygame.K_e : 'E',
+    pygame.K_f : 'F'
+}
+
 KEYORDER = '0123456789ABCDEFabcdefghijklmnopqrstu.'
 
 if len(argv) != 2:
@@ -236,7 +257,7 @@ while running:
                 if curpos[1] < (HEIGHT-1):
                     curpos[1] += 1
 
-            if event.key == pygame.K_SPACE or \
+            if event.key in KEYMAP.keys() or \
                 event.key == pygame.K_PAGEUP or \
                 event.key == pygame.K_PAGEDOWN:
                 column = curpos[0]
@@ -244,13 +265,15 @@ while running:
                 line = m.lines[row+1]
                 char = line[column]
 
-                if event.key == pygame.K_SPACE:
-                    index = (KEYORDER.find('.'))
-                elif event.key == pygame.K_PAGEUP:
-                    index = (KEYORDER.find(char) - 1) % len(KEYORDER)
-                elif event.key == pygame.K_PAGEDOWN:
-                    index = (KEYORDER.find(char) + 1) % len(KEYORDER)
-                newchar = KEYORDER[index]
+                try:
+                    newchar = KEYMAP[event.key]
+                except KeyError:
+                    if event.key == pygame.K_PAGEUP:
+                        index = (KEYORDER.find(char) - 1) % len(KEYORDER)
+                        newchar = KEYORDER[index]
+                    elif event.key == pygame.K_PAGEDOWN:
+                        index = (KEYORDER.find(char) + 1) % len(KEYORDER)
+                    newchar = KEYORDER[index]
 
                 m.lines[row+1] = line[:column] + newchar + line[column+1:]
                 m.tokens = m._tokenize_(m.lines[1:])
