@@ -21,6 +21,9 @@ from time import time
 
 import pygame
 import glitch
+import numpy
+
+#import pycallgraph
 
 TOPMARGIN = 6
 HEIGHT = 8
@@ -86,6 +89,7 @@ with open(argv[1]) as f:
 
 m._expand_(m.lines)
 
+pygame.mixer.pre_init(8000, 8, 1, BUFSIZE)
 pygame.init()
 
 screen = pygame.display.set_mode((WIDTH*GRID, HEIGHT*GRID + TOPMARGIN*GRID), pygame.HWSURFACE)
@@ -127,16 +131,17 @@ def draw_controls():
 
 draw_controls()
 
-valuepattern = pygame.Surface((128, 128), pygame.HWSURFACE)
+valuepattern = pygame.Surface((136, 128), pygame.HWSURFACE)
 valuepattern.convert()
 
-def draw_valuepattern(buf, target):
+def draw_valuepattern(buf, target, drop_frame=False):
     """
     Draws a pattern with color determined by sample.
     """
     global valuepattern
-    for x, y in enumerate(buf):
-        valuepattern.set_at((127, 127-x/2), (y, y, y))
+    if not drop_frame:
+        for x, y in enumerate(buf):
+            valuepattern.set_at((127, 127-x/2), (y, y, y))
     target.blit(valuepattern, (0, 0), (0, 0, 128, 128), pygame.BLEND_ADD)
     valuepattern.scroll(-1, 0)
 
@@ -144,59 +149,75 @@ ypattern = pygame.Surface((136, 128), pygame.HWSURFACE)
 ypattern.convert()
 ypattern.set_colorkey((0, 0, 0))
 
-def draw_ypattern(buf, target):
+def draw_ypattern(buf, target, drop_frame=False):
     """
     Draws a pattern with y coordinate determined by sample.
     """
     global ypattern
-    for x, y in enumerate(buf): # shadow
-        ypattern.set_at((127, 128-y/2), (7, 54, 66))    # Solarized Base02
-        ypattern.set_at((126, 128-y/2), (7, 54, 66))    # Solarized Base02
-    for x, y in enumerate(buf):
-        ypattern.set_at((127, 127-y/2), (220, 50, 47))  # Solarized Red
-        ypattern.set_at((126, 127-y/2), (220, 50, 47))  # Solarized Red
+    if not drop_frame:
+        yarray = pygame.surfarray.pixels2d(ypattern)
+        #for sample in buf: # shadow
+        #    y = 127-sample/2
+        #    yarray[127][y] = 0x073642  # Solarized Base02
+        #    yarray[126][y] = 0x073642
+        for sample in buf:
+            y = 126-sample/2
+            yarray[127][y] = 0xdc322f  # Solarized Red
+            yarray[126][y] = 0xdc322f
+        del yarray
     target.blit(ypattern, (0, 0), (0, 0, 128, 128))
     ypattern.scroll(-2, 0)
 
-oldy = 0
+oldsample = 0
 
-def draw_local(buf, target):
+def draw_local(buf, target, drop_frame=False):
     """
     Draws the local wave (256 samples).
     """
-    global oldy
-    for x, y in enumerate(buf):
-        pygame.draw.line(target, (7, 54, 66), (x/2, 128-y/2),
-            (x/2, 128-oldy/2))  # shadow
-        pygame.draw.line(target, (7, 54, 66), (x/2+1, 128-y/2),
-            (x/2+1, 128-oldy/2))  # shadow
-        pygame.draw.line(target, (38, 139, 210), (x/2, 127-y/2),
-            (x/2, 127-oldy/2))  # Solarized Blue
-        oldy = y
+    if not drop_frame:
+        global oldsample
+        for x, sample in enumerate(buf):
+        #    pygame.draw.line(target, (7, 54, 66), (x/2, 128-sample/2),
+        #        (x/2, 128-oldsample/2))  # shadow
+        #    pygame.draw.line(target, (7, 54, 66), (x/2+1, 128-sample/2),
+        #        (x/2+1, 128-oldsample/2))  # shadow
+            pygame.draw.line(target, (38, 139, 210), (x/2, 127-sample/2),
+                (x/2, 127-oldsample/2))  # Solarized Blue
+            oldsample = sample
 
-def draw_graph(buf):
+def draw_graph(buf, drop_frame=False):
     graph = pygame.Surface((128, 128), pygame.HWSURFACE)
     graph.convert()
     graph.fill((133, 153, 0))  # Solarized Green
-    draw_valuepattern(buf, graph)
-    draw_ypattern(buf, graph)
-    draw_local(buf, graph)
+    draw_valuepattern(buf, graph, drop_frame)
+    draw_ypattern(buf, graph, drop_frame)
+    draw_local(buf, graph, drop_frame)
 
     graph = pygame.transform.scale(graph, (WIDTH*GRID, TOPMARGIN*GRID))
     screen.blit(graph, (0, 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
     pygame.display.update((0, 0, WIDTH*GRID, TOPMARGIN*GRID))
 
-starttime = time()
+channel = pygame.mixer.find_channel()
 i = 0
 running = True
 while running:
-    if ((time() - starttime)*8000 > i):  # no excess output
-        buf = bytearray(m._compute_(j) for j in xrange(i, i+BUFSIZE))
-        stdout.write(str(buf))
+    starttime = time()
+    if (channel.get_queue() == None):  # no excess output
+        #pycallgraph.start_trace()
+        #a = time()-starttime
+
+        buf = numpy.array([m._compute_(j) for j in xrange(i, i+BUFSIZE)], numpy.uint8)
+        sound = pygame.sndarray.make_sound(buf)
+        channel.queue(sound)
         i += BUFSIZE
 
-        if ((time() - starttime)*8000 < i+BUFSIZE):  # discard frames if necessary
-            draw_graph(buf)
+        #stderr.write(str(time()-starttime-a)+' ')
+
+        #b = time()-starttime
+        drop_frame = ((time() - starttime)*8000 > BUFSIZE)
+        draw_graph(buf, drop_frame)
+        #stderr.write(str(time()-starttime-b)+'\n')
+        #pycallgraph.make_dot_graph('pycallgraph.png')
 
     for event in pygame.event.get():
         if event.type == pygame.KEYUP:
