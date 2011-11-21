@@ -33,7 +33,7 @@ TILESIZE = 11
 SCALE = 2
 GRID = TILESIZE * SCALE
 
-BUFSIZE = 512
+BUFSIZE = 256
 
 TILEMAP = {
     '0': (0, 0),
@@ -178,10 +178,10 @@ def draw_ypattern(buf, target, drop_frame=False):
     global ypattern
     if not drop_frame:
         yarray = pygame.surfarray.pixels2d(ypattern)
-        #for sample in buf: # shadow
-        #    y = 127-sample/2
-        #    yarray[127][y] = 0x073642  # Solarized Base02
-        #    yarray[126][y] = 0x073642
+        for sample in buf: # shadow
+            y = 127-sample/2
+            yarray[127][y] = 0x073642  # Solarized Base02
+            yarray[126][y] = 0x073642
         for sample in buf:
             y = 126-sample/2
             yarray[127][y] = 0xdc322f  # Solarized Red
@@ -199,10 +199,10 @@ def draw_local(buf, target, drop_frame=False):
     if not drop_frame:
         global oldsample
         for x, sample in enumerate(buf):
-        #    pygame.draw.line(target, (7, 54, 66), (x/2, 128-sample/2),
-        #        (x/2, 128-oldsample/2))  # shadow
-        #    pygame.draw.line(target, (7, 54, 66), (x/2+1, 128-sample/2),
-        #        (x/2+1, 128-oldsample/2))  # shadow
+            pygame.draw.line(target, (7, 54, 66), (x/2, 128-sample/2),
+                (x/2, 128-oldsample/2))  # shadow
+            pygame.draw.line(target, (7, 54, 66), (x/2+1, 128-sample/2),
+                (x/2+1, 128-oldsample/2))  # shadow
             pygame.draw.line(target, (38, 139, 210), (x/2, 127-sample/2),
                 (x/2, 127-oldsample/2))  # Solarized Blue
             oldsample = sample
@@ -226,21 +226,15 @@ running = True
 while running:
     starttime = time()
     if (channel.get_queue() == None):  # no excess output
-        #pycallgraph.start_trace()
-        #a = time()-starttime
-
-        buf = numpy.array([m._compute_(j) for j in xrange(i, i+BUFSIZE)], numpy.uint8)
-        sound = pygame.sndarray.make_sound(buf)
+        buf = [m._compute_(j) for j in xrange(i, i+BUFSIZE)]
+        sound = pygame.sndarray.make_sound(numpy.array(buf, numpy.uint8))
         channel.queue(sound)
         i += BUFSIZE
 
-        #stderr.write(str(time()-starttime-a)+' ')
-
-        #b = time()-starttime
         drop_frame = ((time() - starttime)*8000 > BUFSIZE)
         draw_graph(buf, drop_frame)
-        #stderr.write(str(time()-starttime-b)+'\n')
-        #pycallgraph.make_dot_graph('pycallgraph.png')
+        if drop_frame:
+            stderr.write('Dropped frame; your system may be too slow.\n')
 
     for event in pygame.event.get():
         if event.type == pygame.KEYUP:
