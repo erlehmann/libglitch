@@ -1,8 +1,8 @@
 libglitch makes 8-bit sounds in the spirit of viznut's [“algorithmic symphonies”][1], using a small language not entirely unlike Forth. Included is a small programm reading formulas from the command line. GNU/Linux users may try “./glitter.py glitch_machine!a10k4h1f!aAk5h2ff!aCk3hg!ad3e!p!9fm!a4kl13f!aCk7Fhn | aplay -f u8” for playback.
 
-For editing and visual effects, try “./glitched.py [filename] | aplay -f u8”. Controls are the arrow keys (to move the cursor around), page up / page down (to change the opcode) and space (to reset the opcode).
+For editing and visual effects, try “./glitched.py [filename]”. Controls are the arrow keys (to move the cursor around), page up / page down (to change the opcode), space (to for no opcode), t (for the counter) and all hexadecimal digit keys (for insertion of the corresponding characters).
 
-libglitch is inspired by a [comment from madgarden][2], who kindly provided the [opcodes][3] he uses in his iPhone application and [some source code][4].
+libglitch is inspired by a [comment from madgarden][2], who kindly provided the [opcodes][3] he uses in his iPhone application and [some source code][4]. There is also a [Scala implementation][5].
 
 [1]: http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html
 
@@ -11,6 +11,8 @@ libglitch is inspired by a [comment from madgarden][2], who kindly provided the 
 [3]: http://paste.ubuntu.com/733764/
 
 [4]: http://paste.ubuntu.com/733829/
+
+[5]: https://github.com/Lymia/ScalaGlitch
 
 License
 -------
