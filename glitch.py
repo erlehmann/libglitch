@@ -80,158 +80,142 @@ class Melody:
                 self.lines.append(16*'.')
 
     def _compute_(self, t, count=1):
+        stack = self.stack
         for token in self.tokens:
             if not token in OPCODES:  # not an opcode, must be a number
-                self.stack.append((int(token, 16)))
-                self.stack.popleft()
+                stack.append((int(token, 16)))
+                stack.popleft()
 
             elif (token == '.'):  # NOP
                 pass
 
             elif (token == 'a'):  # OP_T
-                self.stack.append(t)
-                self.stack.popleft()
+                stack.append(t)
+                stack.popleft()
 
             elif (token == 'b'):  # OP_PUT
-                a = self.stack[-1] % 256
-                self.stack[-a-1] = self.stack[-2]
-                self.stack.rotate(1)
+                a = stack[-1] % 256
+                stack[-a-1] = stack[-2]
+                stack.rotate(1)
 
             elif (token == 'c'):  # OP_DROP
-                self.stack.rotate(1)
+                stack.rotate(1)
 
             elif (token == 'd'):  # OP_MUL
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
-                self.stack.append(b * a)
-                self.stack.popleft()
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
+                stack.append(b * a)
 
             elif (token == 'e'):  # OP_DIV
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
                 try:
-                    self.stack.append(b / a)
+                    stack.append(b / a)
                 except ZeroDivisionError:
-                    self.stack.append(0)
-                self.stack.popleft()
+                    stack.append(0)
 
             elif (token == 'f'):  # OP_ADD
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
-                self.stack.append(b + a)
-                self.stack.popleft()
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
+                stack.append(b + a)
 
             elif (token == 'g'):  # OP_SUB
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
-                self.stack.append(b - a)
-                self.stack.popleft()
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
+                stack.append(b - a)
 
             elif (token == 'h'):  # OP_MOD
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
                 try:
-                    self.stack.append(b % a)
+                    stack.append(b % a)
                 except ZeroDivisionError:
-                    self.stack.append(0)
-                self.stack.popleft()
+                    stack.append(0)
 
             elif (token == 'i'):  # OP_NEG
-                a = self.stack[-1]
-                self.stack[-1] = -a
+                a = stack[-1]
+                stack[-1] = -a
 
             elif (token == 'j'):  # OP_LSHIFT
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
-                self.stack.append(b << a)
-                self.stack.popleft()
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
+                stack.append(b << a)
 
             elif (token == 'k'):  # OP_RSHIFT
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
-                self.stack.append(b >> a)
-                self.stack.popleft()
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
+                stack.append(b >> a)
 
             elif (token == 'l'):  # OP_AND
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
-                self.stack.append(b & a)
-                self.stack.popleft()
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
+                stack.append(b & a)
 
             elif (token == 'm'):  # OP_OR
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
-                self.stack.append(b | a)
-                self.stack.popleft()
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
+                stack.append(b | a)
 
             elif (token == 'n'):  # OP_XOR
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
-                self.stack.append(b ^ a)
-                self.stack.popleft()
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
+                stack.append(b ^ a)
 
             elif (token == 'o'):  # OP_NOT
-                a = self.stack[-1]
-                self.stack[-1] = (~a)
+                stack[-1] = (~stack[-1])
 
             elif (token == 'p'):  # OP_DUP
-                a = self.stack[-1]
-                self.stack.append(a)
-                self.stack.popleft()
+                stack.append(stack[-1])
+                stack.popleft()
 
             elif (token == 'q'):  # OP_GET
-                a = self.stack[-1] % 256
-                b = self.stack[-a-1]
-                self.stack.rotate(1)
-                self.stack.append(b)
-                self.stack.popleft()
+                a = stack[-1] % 256
+                b = stack[-a-1]
+                stack.rotate(1)
+                stack.append(b)
+                stack.popleft()
 
             elif (token == 'r'):  # OP_SWAP
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack[-2] = a
-                self.stack[-1] = b
+                stack[-1], stack[-2] = stack[-2], stack[-1]
 
             elif (token == 's'):  # OP_LT
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
                 if (b < a):
-                    self.stack.append(0xFFFFFFFF)
+                    stack.append(0xFFFFFFFF)
                 else:
-                    self.stack.append(0)
-                self.stack.popleft()
+                    stack.append(0)
 
             elif (token == 't'):  # OP_GT
-                a = self.stack[-1]
-                b = self.stack[-2]
-                self.stack.rotate(2)
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
                 if (b > a):
-                    self.stack.append(0xFFFFFFFF)
+                    stack.append(0xFFFFFFFF)
                 else:
-                    self.stack.append(0)
-                self.stack.popleft()
+                    stack.append(0)
 
             elif (token == 'u'):  # OP_EQ
-                a = self.stack[-1]
-                b = self.stack[-2]
+                a = stack.pop()
+                b = stack[-1]
+                stack.rotate(1)
                 if (b == a):
-                    self.stack.append(0xFFFFFFFF)
+                    stack.append(0xFFFFFFFF)
                 else:
-                    self.stack.append(0)
-                self.stack.popleft()
+                    stack.append(0)
 
-        result = self.stack[-1]
-        self.stack.rotate(1)  # implied OP_DROP
+        result = stack[-1]
+        stack.rotate(1)  # implied OP_DROP
         return result & 0xFF 
 
