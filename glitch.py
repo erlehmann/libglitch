@@ -137,10 +137,6 @@ class Melody:
                 except ZeroDivisionError:
                     stack.append(0)
 
-            elif (token == 'i'):  # OP_NEG
-                a = stack[-1]
-                stack[-1] = (-a) & MAXINT
-
             elif (token == 'j'):  # OP_LSHIFT
                 a = stack.pop()
                 b = stack[-1]

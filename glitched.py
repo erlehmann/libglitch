@@ -60,7 +60,6 @@ TILEMAP = {
     'f': (5, 2),
     'g': (6, 2),
     'h': (7, 2),
-    'i': (0, 3),
     'j': (1, 3),
     'k': (2, 3),
     'l': (3, 3),
@@ -98,7 +97,7 @@ KEYMAP = {
     pygame.K_f : 'F'
 }
 
-KEYORDER = '0123456789ABCDEFabcdefghijklmnopqrstu.'
+KEYORDER = '0123456789ABCDEFabcdefghjklmnopqrstu.'
 
 if len(argv) != 2:
     stderr.write('Usage: glitched.py [glitchfile]\n')
