@@ -112,6 +112,9 @@ m._expand_(m.lines)
 pygame.mixer.pre_init(8000, 8, 1, BUFSIZE)
 pygame.init()
 
+icon = pygame.image.load('glitched.png')
+pygame.display.set_icon(icon)
+
 screen = pygame.display.set_mode((WIDTH*GRID, HEIGHT*GRID + TOPMARGIN*GRID), pygame.HWSURFACE)
 tileset = pygame.transform.scale(
     pygame.image.load('tileset.png'),
