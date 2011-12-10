@@ -1,0 +1,51 @@
+                                       Nils Dagsson Moskopp // erlehmann
+                                         http://dieweltistgarnichtso.net
+                                                           December 2010
+
+
+ The application/x-glitch Media Type for the glitch file format
+
+Status of This Memo
+
+   This memo provides information for the Internet community.  It does
+   not specify an Internet standard of any kind.  Distribution of this
+   memo is unlimited.
+
+Abstract
+
+   The glitch file format is a lightweight, text-based, language-
+   independent program interchange format. It is used to specify
+   programs to be executed on a stack machine that generates a
+   bitstream. The output is commonly interpreted as audio data.
+
+
+1.  Introduction
+
+   The glitch file format is a text format for the serialization of
+   programs generating bitstreams. It is derived from the implementation
+   of the iOS application Glitch Machine [GLITCHMACHINE].
+
+   Programs noted in the glitch file format can contain instructions for
+   a stack machine and integer constants. The glitch file format design
+   goals were for it to be minimal, portable and textual. It was
+   intended to be usable in microblogging applications, which commonly
+   limit textual messages to 140 characters or less.
+   
+1.1.  Conventions Used in This Document
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in [RFC2119].
+
+2.   Glitch File Format Grammar
+
+   [To be continued …]
+
+
+
+N.  References
+
+   [GLITCHMACHINE]   http://madgarden.net/apps/glitch-machine/
+
+   [RFC2119]         Bradner, S., "Key words for use in RFCs to Indicate
+                     Requirement Levels", BCP 14, RFC 2119, March 1997.
