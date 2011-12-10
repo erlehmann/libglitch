@@ -2,7 +2,7 @@ libglitch makes 8-bit sounds in the spirit of viznut's [“algorithmic symphonie
 
 For editing and visual effects, try “./glitched.py [filename]”. Controls are the arrow keys (to move the cursor around), page up / page down (to change the opcode), space (to for no opcode), t (for the counter) and all hexadecimal digit keys (for insertion of the corresponding characters).
 
-libglitch is inspired by a [comment from madgarden][2], who kindly provided the [opcodes][3] he uses in his iPhone application and [some source code][4]. There is also a [Scala implementation][5].
+libglitch is inspired by a [comment from madgarden][2], who kindly provided the [opcodes][3] he uses in his iOS application [“Glitch Machine”][4] and [some source code][5]. There is also a [Scala implementation][6].
 
 [1]: http://countercomplex.blogspot.com/2011/10/algorithmic-symphonies-from-one-line-of.html
 
@@ -10,9 +10,11 @@ libglitch is inspired by a [comment from madgarden][2], who kindly provided the 
 
 [3]: http://paste.ubuntu.com/733764/
 
-[4]: http://paste.ubuntu.com/733829/
+[4]: http://madgarden.net/apps/glitch-machine/
 
-[5]: https://github.com/Lymia/ScalaGlitch
+[5]: http://paste.ubuntu.com/733829/
+
+[6]: https://github.com/Lymia/ScalaGlitch
 
 License
 -------
