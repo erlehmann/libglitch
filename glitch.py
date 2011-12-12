@@ -175,11 +175,10 @@ class Melody:
                 stack.popleft()
 
             elif (token == 'q'):  # OP_PICK
+                # 0 OP_PICK is equivalent to OP_DUP
+                # 0xFF OP_PICK is equivalent to 0xFF
                 a = stack[-1]
-                stack.rotate(1)
-                b = stack[(-a-1) % 256]
-                stack.rotate(-1)
-                stack[-1] = b
+                stack[-1] = stack[-((a-254) % 256)]
 
             elif (token == 'r'):  # OP_SWAP
                 stack[-1], stack[-2] = stack[-2], stack[-1]
