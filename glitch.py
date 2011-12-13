@@ -141,13 +141,19 @@ class Melody:
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
-                stack.append((b << a) & MAXINT)
+                try:
+                    stack.append((b << a) & MAXINT)
+                except OverflowError:
+                    stack.append(0x00000000)
 
             elif (token == 'k'):  # OP_RSHIFT
                 a = stack.pop()
                 b = stack[-1]
                 stack.rotate(1)
-                stack.append((b >> a) & MAXINT)
+                try:
+                    stack.append((b >> a) & MAXINT)
+                except OverflowError:
+                    stack.append(0x00000000)
 
             elif (token == 'l'):  # OP_AND
                 a = stack.pop()
