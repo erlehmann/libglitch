@@ -258,6 +258,11 @@ while running:
                 if curpos[1] < (HEIGHT-1):
                     curpos[1] += 1
 
+            if event.key == pygame.K_HOME:
+                curpos[0] = 0
+            if event.key == pygame.K_END:
+                curpos[0] = 15
+
             if event.key in KEYMAP.keys() or \
                 event.key == pygame.K_PAGEUP or \
                 event.key == pygame.K_PAGEDOWN:
