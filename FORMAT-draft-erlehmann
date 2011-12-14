@@ -54,17 +54,39 @@ Abstract
    an upper limit of 16 characters. The lower case letters "a"--"z",
    digits and the character underscore ("_") are allowed.
 
-   Instructions consist of lines separated by exclamation marks ("!").
+   Instructions consist of one or more lines separated by exclamation
+   marks ("!"), with an upper limit of 16 lines.
 
-   Lines consist of a sequence of one or more characters. The upper case
-   letters "A"--"Z", lower case letters "a"--"z", numbers "0"--"9", the
-   period (".") and the exclamation mark ("!") are allowed.
+   Lines consist of a sequence of one or more characters, with an upper
+   limit of 16 characters. The upper case letters "A"--"Z", lower case
+   letters "a"--"z", numbers "0"--"9" and the period (".") are allowed.
+
+2.1.   Advice for Implementors
+
+   Programs interpreting glitches SHOULD output a warning when
+   encountering any title or line exceeding 16 characters. For
+   robustness, programs SHOULD try to interpret such input, by
+   truncating the title to 16 characters and splitting lines.
 
    Programs interpreting glitches SHOULD output a warning when
    encountering any character other than "A"--"Z", "a"--"z", "0"--"9",
    "_", ".", "!" or a single new line (LF) at the end of a file.
 
 3.    Glitch Stack Machine
+
+3.1.   Stack Machine
+
+   […]
+
+3.2.   Tokenizer
+
+   […]
+
+3.3.   Opcodes
+
+   […]
+
+3.4.   Execution
 
    [To be continued …]
 
