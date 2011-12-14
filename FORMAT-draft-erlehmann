@@ -90,16 +90,58 @@ Abstract
 
    [To be continued …]
 
+4. IANA Considerations
+
+   The MIME media type for the glitch file format is
+   application/x-glitch.
+
+   Type name: application
+
+   Subtype name: x-glitch
+
+   Required parameters: n/a
+
+   Optional parameters: n/a
+
+   Encoding considerations:
+
+      A glitch MUST be represented using ASCII.
 
 
-N.  References
+5.  Security Considerations
 
-   [GLITCHMACHINE]   <http://madgarden.net/apps/glitch-machine/>
+   The glitch file format does not in itself pose a security threat. Due
+   to lack of branching and looping instructions a conforming
+   implementation can not enter an infinite loop.
 
-   [HTML]   <http://www.whatwg.org/specs/web-apps/current-work/multipage/common-input-element-attributes.html#attr-input-maxlength>
+   Implementors SHOULD ensure their implementations handle variable
+   overflows and underflows securely. Users SHOULD take note that there
+   is no general guarantee that an implementation contains no security
+   holes.
+
+6.  Applications that use this media type
+
+   The glitch file format has been used in libglitch [LIBGLITCH].
+
+
+7.  References
+
+7.1.   Normative References
 
    [RFC2119]   Bradner, S., "Key words for use in RFCs to Indicate
                Requirement Levels", BCP 14, RFC 2119, March 1997.
 
    [RFC4234]   Crocker, D. and P.  Overell, "Augmented BNF for Syntax
                Specifications: ABNF", RFC 4234, October 2005.
+
+7.2.   Informative References
+
+   [GLITCHMACHINE]
+               <http://madgarden.net/apps/glitch-machine/>
+
+   [HTML]
+               <http://www.whatwg.org/specs/web-apps/current-work/
+               multipage/common-input-element-attributes.html
+               #attr-input-maxlength>
+
+   [LIBGLITCH] <http://github.com/erlehmann/libglitch>
