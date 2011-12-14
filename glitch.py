@@ -39,8 +39,16 @@ class Melody:
 
     def __repr__(self):
         lines = []
-        for i in range(len(self.lines)):  # Strips NOPs from end of lines for readability.
+        for i in range(len(self.lines)):
+            # strip NOPs from end of lines for readability.
             lines.append(self.lines[i].strip('.'))
+            # prevent hexdigits spanning several lines unless needed
+            try:
+                if self.lines[i+1][0] in HEXDIGITS:
+                    lines[-1] = lines[-1] + '.'
+                    lines[-1] = lines[-1][:16]
+            except IndexError:
+                pass  # last line
 
         leadchar = ''
         if not self.title:
