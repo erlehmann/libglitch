@@ -45,18 +45,26 @@ Abstract
 
 2.   Glitch File Format Grammar
 
-   A glitch consists of sequences of characters. In general, glitches
-   are written as follows:
+   A glitch consists of sequences of characters. In general, a glitch is
+   written as follows:
 
    <title>!<instructions>
 
-   Title names consist of a sequence of zero or more characters. The
-   lower case letters "a"--"z", digits and the character underscore
-   ("_") are allowed.
+   Title names consist of a sequence of zero or more characters, with
+   an upper limit of 16 characters. The lower case letters "a"--"z",
+   digits and the character underscore ("_") are allowed.
 
-   Instructions consist of a sequence of one or more characters. Upper
-   case and lower case ASCII characters, numbers, the period (".")
-   and the exclamation mark ("!") are allowed.
+   Instructions consist of lines separated by exclamation marks ("!").
+
+   Lines consist of a sequence of one or more characters. The upper case
+   letters "A"--"Z", lower case letters "a"--"z", numbers "0"--"9", the
+   period (".") and the exclamation mark ("!") are allowed.
+
+   Programs interpreting glitches SHOULD output a warning when
+   encountering any character other than "A"--"Z", "a"--"z", "0"--"9",
+   "_", ".", "!" or a single new line (LF) at the end of a file.
+
+3.    Glitch Stack Machine
 
    [To be continued …]
 
