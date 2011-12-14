@@ -209,7 +209,9 @@ def draw_local(buf, target, drop_frame=False):
                 (x/2, 127-oldsample/2))  # Solarized Blue
             oldsample = sample
 
-def draw_graph(buf, drop_frame=False):
+font = pygame.font.SysFont("DejaVu Sans Mono", GRID)
+
+def draw_graph(buf, t, drop_frame=False):
     graph = pygame.Surface((128, 128), pygame.HWSURFACE)
     graph.convert()
 
@@ -220,6 +222,9 @@ def draw_graph(buf, drop_frame=False):
 
     graph = pygame.transform.scale(graph, (WIDTH*GRID, TOPMARGIN*GRID))
     screen.blit(graph, (0, 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
+
+    text = font.render("%08X" % t, 0, (0, 0, 0))
+    screen.blit(text, (WIDTH*GRID - text.get_width(), 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
     pygame.display.update((0, 0, WIDTH*GRID, TOPMARGIN*GRID))
 
 channel = pygame.mixer.find_channel()
@@ -234,7 +239,7 @@ while running:
         i += BUFSIZE
 
         drop_frame = ((time() - starttime)*8000 > BUFSIZE)
-        draw_graph(buf, drop_frame)
+        draw_graph(buf, i, drop_frame)
         if drop_frame:
             stderr.write('Dropped frame; your system may be too slow.\n')
 
