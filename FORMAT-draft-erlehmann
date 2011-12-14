@@ -61,7 +61,16 @@ Abstract
    limit of 16 characters. The upper case letters "A"--"Z", lower case
    letters "a"--"z", numbers "0"--"9" and the period (".") are allowed.
 
-2.1.   Advice for Implementors
+2.1    BNF for the Glitch File Format
+
+   alphalower     = %x61-7A
+
+   glitch         = title %0x21 instructions [%x0A]
+   title          = 0*16[alphalower | digit | %x5F]
+   line           = 1*16[alpha | digit | %x2E]
+   instructions   = 0*15[(line %0x21)] line
+
+2.2.   Advice for Implementors
 
    Programs interpreting glitches SHOULD output a warning when
    encountering any title or line exceeding 16 characters. For
