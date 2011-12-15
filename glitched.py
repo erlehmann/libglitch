@@ -264,9 +264,7 @@ while running:
                 curpos[0] = 15
 
             if event.key == pygame.K_ESCAPE:
-                global i
                 i = 0
-                starttime = time()
 
             if event.key in KEYMAP.keys() or \
                 event.key == pygame.K_PAGEUP or \
