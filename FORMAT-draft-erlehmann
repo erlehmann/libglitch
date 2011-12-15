@@ -103,10 +103,11 @@ Abstract
    a value of zero (0). In this context, setting a cell to a value means
    setting it to that value truncated to the last 32bits.
 
-   A top-of-stack (TOS) pointer points to the current cell. Pushing a
-   value to the stack means advancing the TOS pointer, then setting the
-   TOS cell to that value. Popping a value from the stack means
-   advancing the TOS pointer into the other direction.
+   A top-of-stack pointer (TOSP), holding an unsigned 8-bit integer,
+   points to the current cell. Pushing a value to the stack means adding
+   one (1) to the TOSP, then setting the current cell to that value.
+   Popping from the stack means getting the current value, then subtracting
+   one (1) from the TOSP.
 
    […]
 
@@ -116,57 +117,141 @@ Abstract
 
 3.3.   Opcodes
 
-   […]
+   The following table details opcode names and their shorthands. For
+   brevity, abbreviations are used for the top-of-stack pointer (TOSP),
+   cell values (using stack indices within brackets “[” and “]”) and
+   values retrieved or computed in previous numbered steps (V1, V2 …).
 
-   Shorthand   Name        Description
+   Shorthand   Name           Description
 
-   .           OP_NOP      Do nothing.
+   .           OP_NOP         Do nothing. (Used as a digit spacer.)
 
-   a           OP_T        Put t on the stack.
+   a           OP_T           Push t to the stack.
 
-   b           OP_PUT      […]
+   b           OP_PUT      1. Get [TOSP].
+                           2. Compute V1 modulo 256.
+                           3. Compute V2 plus 1.
+                           4. Get [TOSP + 1]
+                           5. Set [TOSP - V3] to V4.
+                           6. Pop the stack.
 
-   c           OP_DROP     Pop the stack.
+   c           OP_DROP     1. Pop from the stack.
 
-   d           OP_MUL      […]
+   d           OP_MUL      1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. Multiply V2 and V1.
+                           4. Push V3 to the stack.
 
-   e           OP_DIV      […]
+   e           OP_DIV      1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. Divide V2 through V1, in case of a
+                              division by zero yielding zero.
+                           4. Push V3 to the stack.
 
-   f           OP_ADD      […]
+   f           OP_ADD      1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. Add V2 and V1.
+                           4. Push V3 to the stack.
 
-   g           OP_SUB      […]
+   g           OP_SUB      1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. From V2, subtract V1.
+                           4. Push V3 to the stack.
 
-   h           OP_MOD      […]
+   h           OP_MOD      1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. Compute V2 modulo V1, in case of a
+                              division by zero yielding zero.
+                           4. Push V3 to the stack.
 
-   j           OP_LSHIFT   […]
+   j           OP_LSHIFT   1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. Compute V2 bit-shifted to the left by V1,
+                              in case of an overflow yielding zero.
+                           4. Push V3 to the stack.
 
-   k           OP_RSHIFT   […]
+   k           OP_RSHIFT   1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. Compute V2 bit-shifted to the right by V1,
+                              in case of an overflow yielding zero.
+                           4. Push V3 to the stack.
 
-   l           OP_AND      […]
+   l           OP_AND      1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. Compute a bitwise AND of V2 and V1.
+                           4. Push V3 to the stack.
 
-   m           OP_OR       […]
+   m           OP_OR       1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. Compute a bitwise OR of V2 and V1.
+                           4. Push V3 to the stack.
 
-   n           OP_XOR      […]
+   n           OP_XOR      1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. Compute a bitwise XOR of V2 and V1.
+                           4. Push V3 to the stack.
 
-   o           OP_NOT      […]
+   o           OP_NOT      1. Pop from the stack.
+                           2. Compute the bitwise NOT of V1.
+                           3. Push V2 to the stack.
 
-   p           OP_DUP      […]
+   p           OP_DUP      1. Pop from the stack.
+                           2. Push V1 to the stack.
+                           3. Push V1 to the stack.
 
-   q           OP_PICK     […]
+   q           OP_PICK     1. Get [TOSP].
+                           2. Compute V1 plus 1.
+                           3. Compute V1 modulo 256.
+                           4. Get [TOSP - V3].
+                           5. Pop the stack.
+                           6. Push V4 to the stack.
 
+   r           OP_SWAP     1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. Push V1 to the stack.
+                           4. Push V2 to the stack.
 
-   Not listed lower case and upper case letters are reserved.
+   s           OP_LT       1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. If V2 is smaller than V1, push 0xFFFFFFFF
+                              to the stack.
+                           4. If V2 is greater than V1, push 0x00000000
+                              to the stack.
 
-   […]
+   t           OP_GT       1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. If V2 is greater than V1, push 0xFFFFFFFF
+                              to the stack.
+                           4. If V2 is smaller than V1, push 0x00000000
+                              to the stack.
 
-3.4.   Execution
+   u           OP_EQ       1. Pop from the stack.
+                           2. Pop from the stack.
+                           3. If V2 and V1 are equal, push 0xFFFFFFFF to
+                              the stack.
+                           4. If V2 and V1 are not equal, push
+                              0x00000000 to the stack.
 
-   After each time a glitch is executed, the value of the TOS cell is
-   output. An implicit POP follows.
+   Not listed lower case and upper case letters are reserved and MUST
+   NOT be used for opcodes. Additional opcodes can be added to the
+   specification as soon as two independent implementations with equal
+   output exist and at least one other implementator pledges to also
+   implement the specified behaviour.
 
-3.5.   Audio Output
+   Programs interpreting glitches MAY optimize opcode behaviour, if the
+   output does not change.
 
-   Programs interpreting a glitch SHOULD only on standard output.
+3.4.   Execution and Output
+
+   Programs interpreting glitches SHOULD execute all contained opcodes
+   8000 times per second. After each time a glitch is executed, a
+   program MUST pop from the stack. The last 8 bits of values retrieved
+   this way constitute a sample.
+
+   Samples SHOULD be written to standard output, sound devices or files.
+   Sample output MAY happen immediately or be buffered. If buffering is
+   used, programs SHOULD buffer at most 256 samples at a time. The
+   resulting output frequency of 31.25hz is adequate for visualisations.
 
 4. IANA Considerations
 
