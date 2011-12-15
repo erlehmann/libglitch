@@ -167,13 +167,15 @@ Abstract
    j           OP_LSHIFT   1. Pop from the stack.
                            2. Pop from the stack.
                            3. Compute V2 bit-shifted to the left by V1,
-                              in case of an overflow yielding zero.
+                              shifting in zeros, in case of an overflow
+                              yielding zero.
                            4. Push V3 to the stack.
 
    k           OP_RSHIFT   1. Pop from the stack.
                            2. Pop from the stack.
                            3. Compute V2 bit-shifted to the right by V1,
-                              in case of an overflow yielding zero.
+                              shifting in zeros, in case of an overflow
+                              yielding zero.
                            4. Push V3 to the stack.
 
    l           OP_AND      1. Pop from the stack.
