@@ -44,7 +44,9 @@ class Melody:
             lines.append(self.lines[i].strip('.'))
             # prevent hexdigits spanning several lines unless needed
             try:
-                if (i > 0) and (self.lines[i+1][0] in HEXDIGITS):
+                if (i > 0) and \
+                    (self.lines[i][-1] in HEXDIGITS) and \
+                    (self.lines[i+1][0] in HEXDIGITS):
                     lines[-1] = lines[-1] + '.'
                     lines[-1] = lines[-1][:16]
             except IndexError:
