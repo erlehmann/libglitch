@@ -73,18 +73,40 @@ Abstract
 
 2.2.   Advice for Implementors
 
+   For interoperability with implementations using fixed-width glyphs,
+   programs SHOULD NOT produce glitches with lines of more than 16
+   characters.
+
    Programs interpreting glitches SHOULD output a warning when
    encountering any title or line exceeding 16 characters. For
    robustness, programs SHOULD try to interpret such input, by
    truncating the title to 16 characters and splitting lines.
 
-   Programs interpreting glitches SHOULD output a warning when
+   If a program automatically truncates or splits lines, it SHOULD
+   output a warning and SHOULD NOT let users save the changed content
+   without further user intervention.
+
+   Programs interpreting glitches MUST output a warning when
    encountering any character other than "A"--"Z", "a"--"z", "0"--"9",
-   "_", ".", "!" or a single new line (LF) at the end of a file.
+   "_", ".", "!" or a single new line (LF) at the end of input and
+   SHOULD stop interpretion.
+
+   Warnings MUST NOT be output to the standard output.
 
 3.    Glitch Stack Machine
 
 3.1.   Stack Machine
+
+   Interpreting programs written in the glitch file format is done using
+   a virtual stack machine. The stack is a ring buffer with 256 cells
+   that can hold an unsigned 32-bit integer and are initialized to hold
+   a value of zero (0). In this context, setting a cell to a value means
+   setting it to that value truncated to the last 32bits.
+
+   A top-of-stack (TOS) pointer points to the current cell. Pushing a
+   value to the stack means advancing the TOS pointer, then setting the
+   TOS cell to that value. Popping a value from the stack means
+   advancing the TOS pointer into the other direction.
 
    […]
 
@@ -96,9 +118,55 @@ Abstract
 
    […]
 
+   Shorthand   Name        Description
+
+   .           OP_NOP      Do nothing.
+
+   a           OP_T        Put t on the stack.
+
+   b           OP_PUT      […]
+
+   c           OP_DROP     Pop the stack.
+
+   d           OP_MUL      […]
+
+   e           OP_DIV      […]
+
+   f           OP_ADD      […]
+
+   g           OP_SUB      […]
+
+   h           OP_MOD      […]
+
+   j           OP_LSHIFT   […]
+
+   k           OP_RSHIFT   […]
+
+   l           OP_AND      […]
+
+   m           OP_OR       […]
+
+   n           OP_XOR      […]
+
+   o           OP_NOT      […]
+
+   p           OP_DUP      […]
+
+   q           OP_PICK     […]
+
+
+   Not listed lower case and upper case letters are reserved.
+
+   […]
+
 3.4.   Execution
 
-   [To be continued …]
+   After each time a glitch is executed, the value of the TOS cell is
+   output. An implicit POP follows.
+
+3.5.   Audio Output
+
+   Programs interpreting a glitch SHOULD only on standard output.
 
 4. IANA Considerations
 
