@@ -59,14 +59,18 @@ Abstract
    lines.
 
    Lines start with an exclamation mark followed by a sequence of one or
-   more opcodes, numbers or periods (".") with an upper limit of 16
-   opcodes.
+   more token, with an upper limit of 16 tokens.
 
-   Opcodes consist of single characters. The upper case letters "G"--"Z"
-   and the lower case letters "a"--"z" are allowed.
+   A tokens can be an opcode, a number or a period (".").
 
-   Numbers consist of one to eight characters. The upper case letters
-   "A"--"F" and the numbers "0"--"9" are allowed.
+   Opcodes tokens consist of single characters. The upper case letters
+   "G"--"Z" and the lower case letters "a"--"z" are allowed.
+
+   Numbers tokens consist of one to eight characters. The upper case
+   letters "A"--"F" and the numbers "0"--"9" are allowed.
+
+   Periods tokens are used as spacers whenever two numbers would
+   otherwise be directly adjacent.
 
 2.1    ABNF for the Glitch File Format
 
@@ -143,8 +147,6 @@ Abstract
    values retrieved or computed in previous numbered steps (V1, V2 …).
 
    Shorthand   Name           Description
-
-   .           NOP         1. Do nothing. (Used as a digit spacer.)
 
    a           T           1. Push t to the stack.
 
