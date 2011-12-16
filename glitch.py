@@ -42,15 +42,6 @@ class Melody:
         for i in range(len(self.lines)):
             # strip NOPs from end of lines for readability.
             lines.append(self.lines[i].strip('.'))
-            # prevent hexdigits spanning several lines unless needed
-            try:
-                if (i > 0) and \
-                    (lines[-1][-1] in HEXDIGITS) and \
-                    (self.lines[i+1][0] in HEXDIGITS):
-                    lines[-1] = lines[-1] + '.'
-                    lines[-1] = lines[-1][:16]
-            except IndexError:
-                pass  # last line
 
         leadchar = ''
         if not self.title:
@@ -63,20 +54,25 @@ class Melody:
     def _tokenize_(self, lines):
         tokens = []
 
+        STATE_NUMBER = False
+
         for line in lines:
             assert(len(line) <= 16)  # only 16 characters per line allowed
+
             for char in line:
-                try:
-                    if (char in HEXDIGITS) and (
-                        (tokens[-1] in HEXDIGITS) or
-                        (tokens[-1][-1] in HEXDIGITS)
-                    ):
-                        tokens[-1] += char
-                    else:
-                        tokens.append(char)
-                except IndexError:  # first character is HEXDIGIT
+                if (char in HEXDIGITS) and STATE_NUMBER:
+                    tokens[-1] += char
+                elif (char != '.'):
                     tokens.append(char)
 
+                if (char in HEXDIGITS):
+                    STATE_NUMBER = True
+                else:
+                    STATE_NUMBER = False
+
+            STATE_NUMBER = False  # new lines begin new numbers
+
+        print tokens
         return tokens
 
     def _expand_(self, lines):
@@ -95,9 +91,6 @@ class Melody:
             if not token in OPCODES:  # not an opcode, must be a number
                 stack.append((int(token, 16)))
                 stack.popleft()
-
-            elif (token == '.'):  # NOP
-                pass
 
             elif (token == 'a'):  # OP_T
                 stack.append(t & MAXINT)
