@@ -81,9 +81,9 @@ class Melody:
 
     def _expand_(self, lines):
         """
-            Appends NOPs to eight lines for easy editing.
+            Appends NOPs to all lines for easy editing.
         """
-        for i in range(9):
+        for i in range(17):
             try:
                 self.lines[i] = (self.lines[i] + (16*'.'))[:16]
             except IndexError:
