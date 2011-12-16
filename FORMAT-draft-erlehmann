@@ -144,110 +144,110 @@ Abstract
 
    Shorthand   Name           Description
 
-   .           OP_NOP         Do nothing. (Used as a digit spacer.)
+   .           NOP         1. Do nothing. (Used as a digit spacer.)
 
-   a           OP_T           Push t to the stack.
+   a           T           1. Push t to the stack.
 
-   b           OP_PUT      1. Get [TOSP].
+   b           PUT         1. Get [TOSP].
                            2. Compute V1 modulo 256.
                            3. Compute V2 plus 1.
                            4. Get [TOSP + 1]
                            5. Set [TOSP - V3] to V4.
                            6. Pop the stack.
 
-   c           OP_DROP     1. Pop from the stack.
+   c           DROP        1. Pop from the stack.
 
-   d           OP_MUL      1. Pop from the stack.
+   d           MUL         1. Pop from the stack.
                            2. Pop from the stack.
                            3. Multiply V2 and V1.
                            4. Push V3 to the stack.
 
-   e           OP_DIV      1. Pop from the stack.
+   e           DIV         1. Pop from the stack.
                            2. Pop from the stack.
                            3. Divide V2 through V1, in case of a
                               division by zero yielding zero.
                            4. Push V3 to the stack.
 
-   f           OP_ADD      1. Pop from the stack.
+   f           ADD         1. Pop from the stack.
                            2. Pop from the stack.
                            3. Add V2 and V1.
                            4. Push V3 to the stack.
 
-   g           OP_SUB      1. Pop from the stack.
+   g           SUB         1. Pop from the stack.
                            2. Pop from the stack.
                            3. From V2, subtract V1.
                            4. Push V3 to the stack.
 
-   h           OP_MOD      1. Pop from the stack.
+   h           MOD         1. Pop from the stack.
                            2. Pop from the stack.
                            3. Compute V2 modulo V1, in case of a
                               division by zero yielding zero.
                            4. Push V3 to the stack.
 
-   j           OP_LSHIFT   1. Pop from the stack.
+   j           LSHIFT      1. Pop from the stack.
                            2. Pop from the stack.
                            3. Compute V2 bit-shifted to the left by V1,
                               shifting in zeros, in case of an overflow
                               yielding zero.
                            4. Push V3 to the stack.
 
-   k           OP_RSHIFT   1. Pop from the stack.
+   k           RSHIFT      1. Pop from the stack.
                            2. Pop from the stack.
                            3. Compute V2 bit-shifted to the right by V1,
                               shifting in zeros, in case of an overflow
                               yielding zero.
                            4. Push V3 to the stack.
 
-   l           OP_AND      1. Pop from the stack.
+   l           AND         1. Pop from the stack.
                            2. Pop from the stack.
                            3. Compute a bitwise AND of V2 and V1.
                            4. Push V3 to the stack.
 
-   m           OP_OR       1. Pop from the stack.
+   m           OR          1. Pop from the stack.
                            2. Pop from the stack.
                            3. Compute a bitwise OR of V2 and V1.
                            4. Push V3 to the stack.
 
-   n           OP_XOR      1. Pop from the stack.
+   n           XOR         1. Pop from the stack.
                            2. Pop from the stack.
                            3. Compute a bitwise XOR of V2 and V1.
                            4. Push V3 to the stack.
 
-   o           OP_NOT      1. Pop from the stack.
+   o           NOT         1. Pop from the stack.
                            2. Compute the bitwise NOT of V1.
                            3. Push V2 to the stack.
 
-   p           OP_DUP      1. Pop from the stack.
+   p           DUP         1. Pop from the stack.
                            2. Push V1 to the stack.
                            3. Push V1 to the stack.
 
-   q           OP_PICK     1. Get [TOSP].
+   q           PICK        1. Get [TOSP].
                            2. Compute V1 plus 1.
                            3. Compute V1 modulo 256.
                            4. Get [TOSP - V3].
                            5. Pop the stack.
                            6. Push V4 to the stack.
 
-   r           OP_SWAP     1. Pop from the stack.
+   r           SWAP        1. Pop from the stack.
                            2. Pop from the stack.
                            3. Push V1 to the stack.
                            4. Push V2 to the stack.
 
-   s           OP_LT       1. Pop from the stack.
+   s           LT          1. Pop from the stack.
                            2. Pop from the stack.
                            3. If V2 is smaller than V1, push 0xFFFFFFFF
                               to the stack.
                            4. If V2 is greater than V1, push 0x00000000
                               to the stack.
 
-   t           OP_GT       1. Pop from the stack.
+   t           GT          1. Pop from the stack.
                            2. Pop from the stack.
                            3. If V2 is greater than V1, push 0xFFFFFFFF
                               to the stack.
                            4. If V2 is smaller than V1, push 0x00000000
                               to the stack.
 
-   u           OP_EQ       1. Pop from the stack.
+   u           EQ          1. Pop from the stack.
                            2. Pop from the stack.
                            3. If V2 and V1 are equal, push 0xFFFFFFFF to
                               the stack.
