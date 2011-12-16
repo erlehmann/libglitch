@@ -55,21 +55,36 @@ Abstract
    an upper limit of 16 characters. The lower case letters "a"--"z",
    digits and the character underscore ("_") are allowed.
 
-   Instructions consist of one or more lines separated by exclamation
-   marks ("!"), with an upper limit of 16 lines.
+   Instructions consist of one or more lines, with an upper limit of 16
+   lines.
 
-   Lines consist of a sequence of one or more characters, with an upper
-   limit of 16 characters. The upper case letters "A"--"Z", lower case
-   letters "a"--"z", numbers "0"--"9" and the period (".") are allowed.
+   Lines start with an exclamation mark followed by a sequence of one or
+   more opcodes, numbers or periods (".") with an upper limit of 16
+   opcodes.
+
+   Opcodes consist of single characters. The upper case letters "G"--"Z"
+   and the lower case letters "a"--"z" are allowed.
+
+   Numbers consist of one to eight characters. The upper case letters
+   "A"--"F" and the numbers "0"--"9" are allowed.
 
 2.1    BNF for the Glitch File Format
 
    alphalower     = %x61-7A
+   underscore     = %x5F
+   title          = 0*16(alphalower / digit / underscore)
 
-   glitch         = title %0x21 instructions [%x0A]
-   title          = 0*16[alphalower | digit | %x5F]
-   line           = 1*16[alpha | digit | %x2E]
-   instructions   = 0*15[(line %0x21)] line
+   opcode         = %x47-5A / %x61-7A
+   number         = 1*8hexdig
+   period         = %x2E
+   token          = opcode / number / period
+
+   newline        = %0x21
+   line           = newline 1*16token
+
+   instructions   = 1*16line
+   glitch         = title instructions [%x0A]
+
 
 2.2.   Advice for Implementors
 
@@ -87,9 +102,14 @@ Abstract
    without further user intervention.
 
    Programs interpreting glitches MUST output a warning when
+   encountering a sequence of more than eight characters from the set of
+   the upper case letters "A"--"F" and the numbers "0"--"9" and SHOULD
+   stop interpretation.
+
+   Programs interpreting glitches MUST output a warning when
    encountering any character other than "A"--"Z", "a"--"z", "0"--"9",
    "_", ".", "!" or a single new line (LF) at the end of input and
-   SHOULD stop interpretion.
+   SHOULD stop interpretation.
 
    Warnings MUST NOT be output to the standard output.
 
