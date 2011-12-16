@@ -172,8 +172,8 @@ Abstract
 
    e           DIV         1. Pop from the stack.
                            2. Pop from the stack.
-                           3. Divide V2 through V1, in case of a
-                              division by zero yielding zero.
+                           3. Divide V2 by V1, in case of a division by
+                              zero yielding zero.
                            4. Push V3 to the stack.
 
    f           ADD         1. Pop from the stack.
