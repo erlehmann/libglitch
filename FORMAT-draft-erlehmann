@@ -225,7 +225,7 @@ Abstract
 
    q           PICK        1. Get [TOSP].
                            2. Compute V1 plus 1.
-                           3. Compute V1 modulo 256.
+                           3. Compute V2 modulo 256.
                            4. Get [TOSP - V3].
                            5. Pop the stack.
                            6. Push V4 to the stack.
