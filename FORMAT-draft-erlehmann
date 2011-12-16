@@ -68,7 +68,7 @@ Abstract
    Numbers consist of one to eight characters. The upper case letters
    "A"--"F" and the numbers "0"--"9" are allowed.
 
-2.1    BNF for the Glitch File Format
+2.1    ABNF for the Glitch File Format
 
    alphalower     = %x61-7A
    underscore     = %x5F
