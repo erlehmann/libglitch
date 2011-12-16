@@ -17,7 +17,11 @@ Abstract
    The glitch file format is a lightweight, text-based, language-
    independent program interchange format. It is used to specify
    programs to be executed on a stack machine that generates a
-   bitstream. The output is commonly interpreted as audio data.
+   bitstream.
+
+   Outputs of such programs are commonly interpreted as audio waveforms.
+   Doing this, many programs have been found to produce interesting
+   musical results, referred to as “bytebeat” [BYTEBEAT].
 
 
 1.  Introduction
@@ -270,11 +274,13 @@ Abstract
 3.4.   Execution and Output
 
    Programs interpreting glitches SHOULD execute all contained opcodes
-   8000 times per second. After each time a glitch is executed, a
-   program MUST add one to the value of t and pop from the stack. The
-   last 8 bits of values retrieved this way constitute a sample.
+   8000 times per second. Programs MUST preserve the contents of the
+   stack between successive interpretations of the same glitch.
 
-   Samples SHOULD be written to standard output, sound devices or files.
+   After each time a glitch is executed, a program MUST add one to the
+   value of t and pop from the stack. The last 8 bits of values
+   retrieved this way constitute a sample. Samples SHOULD be written to
+   standard output, sound devices or files.
 
    Sample output MAY happen immediately or be buffered. If buffering is
    used, programs that output samples on standard output SHOULD buffer
@@ -327,6 +333,8 @@ Abstract
 
 7.2.   Informative References
 
+   [BYTEBEAT]  <http://canonical.org/~kragen/bytebeat/>
+
    [GLITCHMACHINE]
                <http://madgarden.net/apps/glitch-machine/>
 
@@ -335,4 +343,4 @@ Abstract
                multipage/common-input-element-attributes.html
                #attr-input-maxlength>
 
-   [LIBGLITCH] <http://github.com/erlehmann/libglitch>
+   [LIBGLITCH] <https://github.com/erlehmann/libglitch>
