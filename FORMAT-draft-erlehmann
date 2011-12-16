@@ -271,9 +271,11 @@ Abstract
    this way constitute a sample.
 
    Samples SHOULD be written to standard output, sound devices or files.
+
    Sample output MAY happen immediately or be buffered. If buffering is
-   used, programs SHOULD buffer at most 256 samples at a time. The
-   resulting output frequency of 31.25hz is adequate for visualisations.
+   used, programs that output samples on standard output SHOULD buffer
+   at most 256 samples at a time. The resulting output frequency of
+   31.25hz is adequate for visualisations.
 
 4. IANA Considerations
 
