@@ -69,10 +69,8 @@ class Melody:
                     STATE_NUMBER = True
                 else:
                     STATE_NUMBER = False
-
             STATE_NUMBER = False  # new lines begin new numbers
 
-        print tokens
         return tokens
 
     def _expand_(self, lines):
