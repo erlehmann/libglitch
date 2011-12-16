@@ -133,6 +133,8 @@ Abstract
    Popping from the stack means getting the current value, then subtracting
    one (1) from the TOSP.
 
+   The stack machine has a global register referred to as “t”.
+
    […]
 
 3.2.   Tokenizer
@@ -148,7 +150,7 @@ Abstract
 
    Shorthand   Name           Description
 
-   a           T           1. Push t to the stack.
+   a           T           1. Push the value of t to the stack.
 
    b           PUT         1. Get [TOSP].
                            2. Compute V1 modulo 256.
@@ -269,8 +271,8 @@ Abstract
 
    Programs interpreting glitches SHOULD execute all contained opcodes
    8000 times per second. After each time a glitch is executed, a
-   program MUST pop from the stack. The last 8 bits of values retrieved
-   this way constitute a sample.
+   program MUST add one to the value of t and pop from the stack. The
+   last 8 bits of values retrieved this way constitute a sample.
 
    Samples SHOULD be written to standard output, sound devices or files.
 
