@@ -240,8 +240,9 @@ def draw_stack(stack, target, drop_frame):
     if not drop_frame:
         stackarray = pygame.surfarray.pixels3d(pixels)
         for i, value in enumerate(stack):
-            x = (i % 16)
-            y = ((i / 16) % 16)
+            i = i - 1
+            x = (i % 16) + 1
+            y = ((i / 16) % 16) + 1
             h = (value >> 20 & 0xFFF) / 4095.0
             s = (value >> 8 & 0xFFF) / 4095.0
             v = (value & 0xFF) / 255.0
