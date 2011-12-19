@@ -25,7 +25,7 @@ import numpy
 
 #import pycallgraph
 
-TOPMARGIN = 6
+TOPMARGIN = 16
 HEIGHT = 8
 WIDTH = 16
 
@@ -207,7 +207,7 @@ def draw_ypattern(buf, target, drop_frame=False):
 
 oldsample = 0
 
-def draw_local(buf, target, drop_frame=False):
+def draw_wave(buf, target, drop_frame=False):
     """
     Draws the local wave (256 samples).
     """
@@ -222,22 +222,63 @@ def draw_local(buf, target, drop_frame=False):
                 (x/2, 127-oldsample/2))  # Solarized Blue
             oldsample = sample
 
+import colorsys
+
+def draw_stack(stack, target, drop_frame):
+    """
+    Draws the stack as a 16x16 square using a HSV model.
+
+    Hue is determined by 12 highest bytes.
+    Saturation is determined by the next 12 bits.
+    Value is determined using the last 8 bits.
+    """
+    pixels = pygame.Surface((16, 16), pygame.HWSURFACE)
+    if not drop_frame:
+        stackarray = pygame.surfarray.pixels3d(pixels)
+        for i, value in enumerate(stack):
+            x = (i % 16)
+            y = ((i / 16) % 16)
+            h = (value >> 20 & 0xFFF) / 4095.0
+            s = (value >> 8 & 0xFFF) / 4095.0
+            v = (value & 0xFF) / 255.0
+            r, g, b = colorsys.hsv_to_rgb(h, s, v)
+            stackarray[-x][-y][0] = r * 0xFF
+            stackarray[-x][-y][1] = g * 0xFF
+            stackarray[-x][-y][2] = b * 0xFF
+        del stackarray
+    pixels = pygame.transform.scale(pixels, (128, 128))
+    target.blit(pixels, (0, 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
+
 font = pygame.font.SysFont("DejaVu Sans Mono", GRID)
 
-def draw_graph(buf, t, drop_frame=False):
+RENDER_WAVE = True
+RENDER_YPATTERN = True
+RENDER_VALUEPATTERN = True
+
+RENDER_STACK = False
+RENDER_ITERATOR = False
+
+def draw_graph(buf, stack, t, drop_frame=False):
     graph = pygame.Surface((128, 128), pygame.HWSURFACE)
     graph.convert()
 
+    if RENDER_STACK:
+        draw_stack(stack, graph, drop_frame)
+
     for b in [buf[i:i+256] for i in xrange(0, len(buf), 256)]:
-        draw_valuepattern(b, graph, drop_frame)
-        draw_ypattern(b, graph, drop_frame)
-        draw_local(b, graph, drop_frame)
+        if RENDER_VALUEPATTERN:
+            draw_valuepattern(b, graph, drop_frame)
+        if RENDER_YPATTERN:
+            draw_ypattern(b, graph, drop_frame)
+        if RENDER_WAVE:
+            draw_wave(b, graph, drop_frame)
 
     graph = pygame.transform.scale(graph, (WIDTH*GRID, TOPMARGIN*GRID))
     screen.blit(graph, (0, 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
 
-    text = font.render("%08X" % t, 0, (0, 0, 0))
-    screen.blit(text, (WIDTH*GRID - text.get_width(), 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
+    if RENDER_ITERATOR:
+        text = font.render("%08X" % t, 0, (0, 0, 0))
+        screen.blit(text, (WIDTH*GRID - text.get_width(), 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
     pygame.display.update((0, 0, WIDTH*GRID, TOPMARGIN*GRID))
 
 channel = pygame.mixer.find_channel()
@@ -252,7 +293,7 @@ while running:
         i += BUFSIZE
 
         drop_frame = ((time() - starttime)*8000 > BUFSIZE)
-        draw_graph(buf, i, drop_frame)
+        draw_graph(buf, m.stack, i, drop_frame)
         if drop_frame:
             stderr.write('Dropped frame; your system may be too slow.\n')
 
@@ -278,6 +319,21 @@ while running:
 
             if event.key == pygame.K_ESCAPE:
                 i = 0
+
+            if event.key == pygame.K_F5:
+                RENDER_WAVE = not RENDER_WAVE
+
+            if event.key == pygame.K_F6:
+                RENDER_YPATTERN = not RENDER_YPATTERN
+
+            if event.key == pygame.K_F7:
+                RENDER_VALUEPATTERN = not RENDER_VALUEPATTERN
+
+            if event.key == pygame.K_F8:
+                RENDER_STACK = not RENDER_STACK
+
+            if event.key == pygame.K_F9:
+                RENDER_ITERATOR = not RENDER_ITERATOR
 
             if event.key in KEYMAP.keys() or \
                 event.key == pygame.K_PAGEUP or \
