@@ -25,9 +25,10 @@ import numpy
 
 #import pycallgraph
 
-TOPMARGIN = 16
-HEIGHT = 8
-WIDTH = 16
+GRAPH_WIDTH = 16
+GRAPH_HEIGHT = 16
+TEXT_HEIGHT = 16
+TEXT_WIDTH = 16
 
 TILESIZE = 11
 SCALE = 2
@@ -128,7 +129,10 @@ pygame.init()
 icon = pygame.image.load('glitched.png')
 pygame.display.set_icon(icon)
 
-screen = pygame.display.set_mode((WIDTH*GRID, HEIGHT*GRID + TOPMARGIN*GRID), pygame.HWSURFACE)
+screen = pygame.display.set_mode((
+        (TEXT_WIDTH + GRAPH_WIDTH)*GRID, \
+        max(TEXT_HEIGHT, GRAPH_HEIGHT)*GRID
+    ), pygame.HWSURFACE)
 tileset = pygame.transform.scale(
     pygame.image.load('tileset.png'),
     (8*GRID, 7*GRID)
@@ -154,16 +158,16 @@ def tile(char):
 def draw_controls():
     screen.fill(
         (253, 246, 227),  # Solarized Base03
-        (0, TOPMARGIN*GRID, WIDTH*GRID, HEIGHT*GRID + TOPMARGIN*GRID)
+        (GRAPH_WIDTH*GRID, 0, TEXT_WIDTH*GRID + GRAPH_WIDTH*GRID, TEXT_HEIGHT*GRID)
     )
 
     for i, line in enumerate(m.lines[1:]):
         for j, char in enumerate(line):
             if (char != '.'):  # NOP, not drawn
-                screen.blit(tile(char), (j*GRID, i*GRID + TOPMARGIN*GRID))
+                screen.blit(tile(char), (j*GRID + GRAPH_WIDTH*GRID, i*GRID))
 
-    screen.blit(tile('CURSOR'), (curpos[0]*GRID, curpos[1]*GRID + TOPMARGIN*GRID))
-    pygame.display.update((0, TOPMARGIN*GRID, WIDTH*GRID, HEIGHT*GRID + TOPMARGIN*GRID))
+    screen.blit(tile('CURSOR'), (curpos[0]*GRID + GRAPH_WIDTH*GRID, curpos[1]*GRID))
+    pygame.display.update((GRAPH_WIDTH*GRID, 0, TEXT_WIDTH*GRID, TEXT_HEIGHT*GRID))
 
 draw_controls()
 
@@ -247,7 +251,7 @@ def draw_stack(stack, target, drop_frame):
             stackarray[-x][-y][2] = b * 0xFF
         del stackarray
     pixels = pygame.transform.scale(pixels, (128, 128))
-    target.blit(pixels, (0, 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
+    target.blit(pixels, (0, 0), (0, 0, GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
 
 font = pygame.font.SysFont("DejaVu Sans Mono", GRID)
 
@@ -273,13 +277,13 @@ def draw_graph(buf, stack, t, drop_frame=False):
         if RENDER_WAVE:
             draw_wave(b, graph, drop_frame)
 
-    graph = pygame.transform.scale(graph, (WIDTH*GRID, TOPMARGIN*GRID))
-    screen.blit(graph, (0, 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
+    graph = pygame.transform.scale(graph, (GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
+    screen.blit(graph, (0, 0), (0, 0, GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
 
     if RENDER_ITERATOR:
         text = font.render("%08X" % t, 0, (0, 0, 0))
-        screen.blit(text, (WIDTH*GRID - text.get_width(), 0), (0, 0, WIDTH*GRID, TOPMARGIN*GRID))
-    pygame.display.update((0, 0, WIDTH*GRID, TOPMARGIN*GRID))
+        screen.blit(text, (GRAPH_WIDTH*GRID - text.get_width(), 0), (0, 0, GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
+    pygame.display.update((0, 0, GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
 
 channel = pygame.mixer.find_channel()
 i = 0
@@ -303,13 +307,13 @@ while running:
                 if curpos[0] > 0:
                     curpos[0] -= 1
             if event.key == pygame.K_RIGHT:
-                if curpos[0] < (WIDTH-1):
+                if curpos[0] < (TEXT_WIDTH-1):
                     curpos[0] += 1
             if event.key == pygame.K_UP:
                 if curpos[1] > 0:
                     curpos[1] -= 1
             if event.key == pygame.K_DOWN:
-                if curpos[1] < (HEIGHT-1):
+                if curpos[1] < (TEXT_HEIGHT-1):
                     curpos[1] += 1
 
             if event.key == pygame.K_HOME:
