@@ -278,9 +278,9 @@ Abstract
    stack between successive interpretations of the same glitch.
 
    After each time a glitch is executed, a program MUST add one to the
-   value of t and pop from the stack. The last 8 bits of values
-   retrieved this way constitute a sample. Samples SHOULD be written to
-   standard output, sound devices or files.
+   value of t. The last 8 bits of values retrieved this way constitute
+   a sample. Samples SHOULD be written to standard output, sound devices
+   or files.
 
    Sample output MAY happen immediately or be buffered. If buffering is
    used, programs that output samples on standard output SHOULD buffer

@@ -218,6 +218,5 @@ class Melody:
                     stack.append(0)
 
         result = stack[-1]
-        stack.rotate(1)  # implied OP_DROP
         return result & 0xFF 
 
