@@ -70,7 +70,8 @@ KEYMAP = {
     pygame.K_f : 'F'
 }
 
-KEYORDER = '0123456789ABCDEFabcdefghjklmnopqrstu.'
+OPCODE_ORDER = '0123456789ABCDEFabcdefghjklmnopqrstu.'
+TEXT_ORDER = 'abcdefghijklmnopqrstuvwxyz0123456789_.'
 
 if len(argv) != 2:
     stderr.write('Usage: glitched.py [glitchfile]\n')
@@ -327,8 +328,15 @@ while running:
                 line = m.lines[row]
                 char = line[column]
 
+                if (row == 0):
+                    KEYORDER = TEXT_ORDER
+                else:
+                    KEYORDER = OPCODE_ORDER
+
                 try:
-                    newchar = KEYMAP[event.key]
+                    char = KEYMAP[event.key]
+                    if (char in KEYORDER):
+                        newchar = char
                 except KeyError:
                     if event.key == pygame.K_PAGEUP:
                         index = (KEYORDER.find(char) - 1) % len(KEYORDER)
