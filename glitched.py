@@ -36,47 +36,6 @@ GRID = TILESIZE * SCALE
 
 BUFSIZE = 256
 
-TILEMAP = {
-    '0': (0, 0),
-    '1': (1, 0),
-    '2': (2, 0),
-    '3': (3, 0),
-    '4': (4, 0),
-    '5': (5, 0),
-    '6': (6, 0),
-    '7': (7, 0),
-    '8': (0, 1),
-    '9': (1, 1),
-    'A': (2, 1),
-    'B': (3, 1),
-    'C': (4, 1),
-    'D': (5, 1),
-    'E': (6, 1),
-    'F': (7, 1),
-    'a': (0, 2),
-    'b': (1, 2),
-    'c': (2, 2),
-    'd': (3, 2),
-    'e': (4, 2),
-    'f': (5, 2),
-    'g': (6, 2),
-    'h': (7, 2),
-    'j': (1, 3),
-    'k': (2, 3),
-    'l': (3, 3),
-    'm': (4, 3),
-    'n': (5, 3),
-    'o': (6, 3),
-    'p': (7, 3),
-    'q': (0, 4),
-    'r': (1, 4),
-    's': (2, 4),
-    't': (3, 4),
-    'u': (4, 4),
-    '.': (6, 6),
-    'CURSOR': (7, 6)
-}
-
 KEYMAP = {
     pygame.K_SPACE: '.',
     pygame.K_PERIOD: '.',
@@ -134,25 +93,41 @@ screen = pygame.display.set_mode((
         max(TEXT_HEIGHT, GRAPH_HEIGHT)*GRID
     ), pygame.HWSURFACE)
 tileset = pygame.transform.scale(
-    pygame.image.load('tileset.png'),
-    (8*GRID, 7*GRID)
+    pygame.image.load('fontset.png'),
+    (100*GRID, 3*GRID)
 ).convert()
 
 curpos = [0, 0]
 
 tilecache = {}
 
-def tile(char):
+MODE_TEXT = 0
+MODE_OPCODE = 1
+MODE_OPCODE_MUTED = 2
+
+def tile(char, mode=MODE_OPCODE):
     global tilecache
     try:
-        return tilecache[char]
+        return tilecache[char][mode]
     except KeyError:
         tile = pygame.Surface((GRID, GRID), pygame.HWSURFACE).convert()
         tile.set_colorkey((0, 0, 0))
-        x = GRID * TILEMAP[char][0]
-        y = GRID * TILEMAP[char][1]
+
+        try:
+            index = (ord(char) - 32)
+        except TypeError:
+            if (char == 'CURSOR'):
+                index = 0
+        x = GRID * index
+        y = GRID * mode
+
         tile.blit(tileset, (0, 0), (x, y, GRID, GRID))
-        tilecache[char] = tile
+
+        try:
+            tilecache[char][mode] = tile
+        except KeyError:
+            tilecache[char] = { mode: tile }
+
         return tile
 
 def draw_controls():
@@ -161,10 +136,14 @@ def draw_controls():
         (GRAPH_WIDTH*GRID, 0, TEXT_WIDTH*GRID + GRAPH_WIDTH*GRID, TEXT_HEIGHT*GRID)
     )
 
-    for i, line in enumerate(m.lines[1:]):
+    for i, line in enumerate(m.lines):
+        if (i == 0):
+            mode = MODE_TEXT  # title
+        else:
+            mode = MODE_OPCODE
         for j, char in enumerate(line):
             if (char != '.'):  # NOP, not drawn
-                screen.blit(tile(char), (j*GRID + GRAPH_WIDTH*GRID, i*GRID))
+                screen.blit(tile(char, mode), (j*GRID + GRAPH_WIDTH*GRID, i*GRID))
 
     screen.blit(tile('CURSOR'), (curpos[0]*GRID + GRAPH_WIDTH*GRID, curpos[1]*GRID))
     pygame.display.update((GRAPH_WIDTH*GRID, 0, TEXT_WIDTH*GRID, TEXT_HEIGHT*GRID))
@@ -345,7 +324,7 @@ while running:
                 event.key == pygame.K_PAGEDOWN:
                 column = curpos[0]
                 row = curpos[1]
-                line = m.lines[row+1]
+                line = m.lines[row]
                 char = line[column]
 
                 try:
@@ -358,7 +337,7 @@ while running:
                         index = (KEYORDER.find(char) + 1) % len(KEYORDER)
                     newchar = KEYORDER[index]
 
-                m.lines[row+1] = line[:column] + newchar + line[column+1:]
+                m.lines[row] = line[:column] + newchar + line[column+1:]
                 m.tokens = m._tokenize_(m.lines[1:])
                 m._reset_()
                 stderr.write('Now playing: ' + str(m) + '\n')
