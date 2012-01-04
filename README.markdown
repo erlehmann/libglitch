@@ -4,7 +4,7 @@ Using sox, sound can easily be exported into wave files: “./glitter.py `cat tr
 
 For editing and visual effects, try “./glitched.py [filename]”. Controls are the arrow keys (to move the cursor around), page up / page down (to change the opcode), space (to for no opcode), t (for the counter) and all hexadecimal digit keys (for insertion of the corresponding characters). Symbol keys (plus, minus etc.) may also work.
 
-F5, F6, F7, F8 set visualisation options. Press all of them in order to see a stack visualisation. F9 shows the current value of the counter (“t”).
+In glitched, press F4 to switch between waveform and stack visualisation. F5, F6, F7, F8 provide finer control over visualisation options. Press all of them in order to see a stack visualisation. F9 shows the current value of the counter (“t”).
 
 libglitch is inspired by a [comment from madgarden][2], who kindly provided the [opcodes][3] he uses in his iOS application [“Glitch Machine”][4] and [some source code][5]. There is also a [Scala implementation][6].
 

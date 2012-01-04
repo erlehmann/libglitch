@@ -305,6 +305,12 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 i = 0
 
+            if event.key == pygame.K_F4:
+                RENDER_WAVE = not RENDER_WAVE
+                RENDER_YPATTERN = not RENDER_YPATTERN
+                RENDER_VALUEPATTERN = not RENDER_VALUEPATTERN
+                RENDER_STACK = not RENDER_STACK
+
             if event.key == pygame.K_F5:
                 RENDER_WAVE = not RENDER_WAVE
 
