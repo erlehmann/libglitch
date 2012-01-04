@@ -36,7 +36,7 @@ GRID = TILESIZE * SCALE
 
 BUFSIZE = 256
 
-KEYMAP = {
+OPCODE_KEYMAP = {
     pygame.K_SPACE: '.',
     pygame.K_PERIOD: '.',
     pygame.K_t : 'a',
@@ -68,6 +68,47 @@ KEYMAP = {
     pygame.K_d : 'D',
     pygame.K_e : 'E',
     pygame.K_f : 'F'
+}
+
+TEXT_KEYMAP = {
+    pygame.K_SPACE: '.',
+    pygame.K_UNDERSCORE : '_',
+    pygame.K_a : 'a',
+    pygame.K_b : 'b',
+    pygame.K_c : 'c',
+    pygame.K_d : 'd',
+    pygame.K_e : 'e',
+    pygame.K_f : 'f',
+    pygame.K_g : 'g',
+    pygame.K_h : 'h',
+    pygame.K_i : 'i',
+    pygame.K_j : 'j',
+    pygame.K_k : 'k',
+    pygame.K_l : 'l',
+    pygame.K_m : 'm',
+    pygame.K_n : 'n',
+    pygame.K_o : 'o',
+    pygame.K_p : 'p',
+    pygame.K_q : 'q',
+    pygame.K_r : 'r',
+    pygame.K_s : 's',
+    pygame.K_t : 't',
+    pygame.K_u : 'u',
+    pygame.K_v : 'v',
+    pygame.K_w : 'w',
+    pygame.K_x : 'x',
+    pygame.K_y : 'y',
+    pygame.K_z : 'z',
+    pygame.K_0 : '0',
+    pygame.K_1 : '1',
+    pygame.K_2 : '2',
+    pygame.K_3 : '3',
+    pygame.K_4 : '4',
+    pygame.K_5 : '5',
+    pygame.K_6 : '6',
+    pygame.K_7 : '7',
+    pygame.K_8 : '8',
+    pygame.K_9 : '9'
 }
 
 OPCODE_ORDER = '0123456789ABCDEFabcdefghjklmnopqrstu.'
@@ -326,7 +367,8 @@ while running:
             if event.key == pygame.K_F9:
                 RENDER_ITERATOR = not RENDER_ITERATOR
 
-            if event.key in KEYMAP.keys() or \
+            if event.key in TEXT_KEYMAP.keys() or \
+                event.key in OPCODE_KEYMAP.keys() or \
                 event.key == pygame.K_PAGEUP or \
                 event.key == pygame.K_PAGEDOWN:
                 column = curpos[0]
@@ -334,10 +376,22 @@ while running:
                 line = m.lines[row]
                 char = line[column]
 
-                if (row == 0):
+                if (row == 0) and (
+                    event.key in TEXT_KEYMAP.keys() or \
+                    event.key == pygame.K_PAGEUP or \
+                    event.key == pygame.K_PAGEDOWN
+                    ):
+                    KEYMAP = TEXT_KEYMAP
                     KEYORDER = TEXT_ORDER
-                else:
+                elif (row > 0) and (
+                    event.key in OPCODE_KEYMAP.keys() or \
+                    event.key == pygame.K_PAGEUP or \
+                    event.key == pygame.K_PAGEDOWN
+                    ):
+                    KEYMAP = OPCODE_KEYMAP
                     KEYORDER = OPCODE_ORDER
+                else:
+                    break
 
                 try:
                     char = KEYMAP[event.key]
