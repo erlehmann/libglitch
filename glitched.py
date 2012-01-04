@@ -310,9 +310,10 @@ def draw_graph(buf, stack, t, drop_frame=False):
 channel = pygame.mixer.find_channel()
 i = 0
 running = True
+PAUSED = False
 while running:
     starttime = time()
-    if (channel.get_queue() == None):  # no excess output
+    if (channel.get_queue() == None and not PAUSED):  # no excess output
         buf = [m._compute_(j) for j in xrange(i, i+BUFSIZE)]
         sound = pygame.sndarray.make_sound(numpy.array(buf, numpy.uint8))
         channel.queue(sound)
@@ -345,6 +346,9 @@ while running:
 
             if event.key == pygame.K_ESCAPE:
                 i = 0
+
+            if event.key == pygame.K_PAUSE:
+                PAUSED = not PAUSED
 
             if event.key == pygame.K_F4:
                 RENDER_WAVE = not RENDER_WAVE
