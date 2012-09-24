@@ -423,6 +423,10 @@ while running:
                 RENDER_YPATTERN = not RENDER_YPATTERN
                 RENDER_VALUEPATTERN = not RENDER_VALUEPATTERN
                 RENDER_STACK = not RENDER_STACK
+            else:
+                curpos[0] = x/GRID - 16
+                curpos[1] = y/GRID
+                draw_controls()
 
         elif event.type == pygame.QUIT:
             with open(argv[1], 'w') as f:
