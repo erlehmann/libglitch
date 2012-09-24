@@ -145,7 +145,7 @@ tilecache = {}
 
 MODE_TEXT = 0
 MODE_OPCODE = 1
-MODE_OPCODE_MUTED = 2
+MODE_ITERATOR = 2
 
 def tile(char, mode=MODE_OPCODE):
     global tilecache
@@ -275,14 +275,12 @@ def draw_stack(stack, target, drop_frame):
     pixels = pygame.transform.scale(pixels, (128, 128))
     target.blit(pixels, (0, 0), (0, 0, GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
 
-font = pygame.font.SysFont("DejaVu Sans Mono", GRID)
-
 RENDER_WAVE = True
 RENDER_YPATTERN = True
 RENDER_VALUEPATTERN = True
 
 RENDER_STACK = False
-RENDER_ITERATOR = False
+RENDER_ITERATOR = True
 
 def draw_graph(buf, stack, t, drop_frame=False):
     graph = pygame.Surface((128, 128), pygame.HWSURFACE)
@@ -303,9 +301,12 @@ def draw_graph(buf, stack, t, drop_frame=False):
     screen.blit(graph, (0, 0), (0, 0, GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
 
     if RENDER_ITERATOR:
-        text = font.render("%08X" % t, 0, (0, 0, 0))
-        screen.blit(text, (GRAPH_WIDTH*GRID - text.get_width(), 0), (0, 0, GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
-    pygame.display.update((0, 0, GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
+        iterator_hex = "%X" % t
+        iterator_length = len(iterator_hex)
+        for i, char in enumerate(iterator_hex):
+            screen.blit(tile(char, MODE_ITERATOR), ((GRAPH_WIDTH+TEXT_WIDTH)*GRID - iterator_length*GRID + i*GRID, 0))
+
+    pygame.display.update((0, 0, (GRAPH_WIDTH+TEXT_WIDTH)*GRID, GRAPH_HEIGHT*GRID))
 
 channel = pygame.mixer.find_channel()
 i = 0
