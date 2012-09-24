@@ -416,6 +416,14 @@ while running:
 
             draw_controls()
 
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            x, y = event.pos
+            if x < GRAPH_WIDTH*GRID:
+                RENDER_WAVE = not RENDER_WAVE
+                RENDER_YPATTERN = not RENDER_YPATTERN
+                RENDER_VALUEPATTERN = not RENDER_VALUEPATTERN
+                RENDER_STACK = not RENDER_STACK
+
         elif event.type == pygame.QUIT:
             with open(argv[1], 'w') as f:
                 f.write(str(m) + '\n')
