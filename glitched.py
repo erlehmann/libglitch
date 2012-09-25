@@ -136,7 +136,7 @@ screen = pygame.display.set_mode((
     ), pygame.HWSURFACE)
 tileset = pygame.transform.scale(
     pygame.image.load('fontset.png'),
-    (100*GRID, 3*GRID)
+    (100*GRID, 4*GRID)
 ).convert()
 
 curpos = [0, 0]
@@ -145,7 +145,8 @@ tilecache = {}
 
 MODE_TEXT = 0
 MODE_OPCODE = 1
-MODE_ITERATOR = 2
+MODE_OPCODE_MUTED = 2
+MODE_ITERATOR = 3
 
 def tile(char, mode=MODE_OPCODE):
     global tilecache
@@ -172,6 +173,7 @@ def tile(char, mode=MODE_OPCODE):
 
         return tile
 
+mutedlines = set()
 def draw_controls():
     screen.fill(
         (253, 246, 227),  # Solarized Base03
@@ -182,7 +184,10 @@ def draw_controls():
         if (i == 0):
             mode = MODE_TEXT  # title
         else:
-            mode = MODE_OPCODE
+            if i in mutedlines:
+                mode = MODE_OPCODE_MUTED
+            else:
+                mode = MODE_OPCODE
         for j, char in enumerate(line):
             if (char != '.'):  # NOP, not drawn
                 screen.blit(tile(char, mode), (j*GRID + GRAPH_WIDTH*GRID, i*GRID))
@@ -372,6 +377,15 @@ while running:
             if event.key == pygame.K_F9:
                 RENDER_ITERATOR = not RENDER_ITERATOR
 
+            if event.key == pygame.K_F10:
+                row = curpos[1]
+                if row in mutedlines:
+                    mutedlines = mutedlines.difference([row])
+                else:
+                    mutedlines = mutedlines.union([row])
+                m.tokens = m._tokenize_(m.lines[1:], [i-1 for i in mutedlines])
+                m._reset_()
+
             if event.key in TEXT_KEYMAP.keys() or \
                 event.key in OPCODE_KEYMAP.keys() or \
                 event.key == pygame.K_PAGEUP or \
@@ -408,10 +422,10 @@ while running:
                         newchar = KEYORDER[index]
                     elif event.key == pygame.K_PAGEDOWN:
                         index = (KEYORDER.find(char) + 1) % len(KEYORDER)
-                    newchar = KEYORDER[index]
+                        newchar = KEYORDER[index]
 
                 m.lines[row] = line[:column] + newchar + line[column+1:]
-                m.tokens = m._tokenize_(m.lines[1:])
+                m.tokens = m._tokenize_(m.lines[1:], mutedlines)
                 m._reset_()
                 stderr.write('Now playing: ' + str(m) + '\n')
 

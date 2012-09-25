@@ -24,7 +24,7 @@ HEXDIGITS = '0123456789ABCDEF'
 MAXINT = 0xFFFFFFFF
 
 class Melody:
-    def __init__(self, melody):
+    def __init__(self, melody, mutedlines=[]):
         """
         A Melody consists of lines signifying opcodes and hexadecimal numbers.
         [a-z] and [G-Z] denote opcodes, while [1-9] and [A-F] denote numbers.
@@ -34,7 +34,7 @@ class Melody:
 
         self.lines = melody.split('!')
         self.title = self.lines[0]
-        self.tokens = self._tokenize_(self.lines[1:])
+        self.tokens = self._tokenize_(self.lines[1:], mutedlines)
         self._reset_()
 
     def __repr__(self):
@@ -51,13 +51,15 @@ class Melody:
     def _reset_(self):
         self.stack = deque([0] * 256)
 
-    def _tokenize_(self, lines):
+    def _tokenize_(self, lines, mutedlines=[]):
         tokens = []
 
         STATE_NUMBER = False
 
-        for line in lines:
+        for i, line in enumerate(lines):
             assert(len(line) <= 16)  # only 16 characters per line allowed
+            if i in mutedlines:
+                continue
 
             for char in line:
                 if (char in HEXDIGITS) and STATE_NUMBER:
@@ -218,5 +220,5 @@ class Melody:
                     stack.append(0)
 
         result = stack[-1]
-        return result & 0xFF 
+        return result & 0xFF
 
