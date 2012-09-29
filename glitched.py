@@ -287,6 +287,13 @@ RENDER_VALUEPATTERN = True
 RENDER_STACK = False
 RENDER_ITERATOR = True
 
+def draw_iterator(t):
+    iterator_hex = "%X" % t
+    iterator_length = len(iterator_hex)
+    for i, char in enumerate(iterator_hex):
+        screen.blit(tile(char, MODE_ITERATOR), ((GRAPH_WIDTH+TEXT_WIDTH-iterator_length+i)*GRID, (TEXT_HEIGHT-1)*GRID))
+    pygame.display.update(((GRAPH_WIDTH+TEXT_WIDTH-iterator_length)*GRID, (TEXT_HEIGHT-1)*GRID, TEXT_WIDTH*GRID, GRID))
+
 def draw_graph(buf, stack, t, drop_frame=False):
     graph = pygame.Surface((128, 128), pygame.HWSURFACE)
     graph.convert()
@@ -305,17 +312,12 @@ def draw_graph(buf, stack, t, drop_frame=False):
     graph = pygame.transform.scale(graph, (GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
     screen.blit(graph, (0, 0), (0, 0, GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
 
-    if RENDER_ITERATOR:
-        iterator_hex = "%X" % t
-        iterator_length = len(iterator_hex)
-        for i, char in enumerate(iterator_hex):
-            screen.blit(tile(char, MODE_ITERATOR), ((GRAPH_WIDTH+TEXT_WIDTH)*GRID - iterator_length*GRID + i*GRID, 0))
-
-    pygame.display.update((0, 0, (GRAPH_WIDTH+TEXT_WIDTH)*GRID, GRAPH_HEIGHT*GRID))
+    draw_iterator(t)
+    pygame.display.update((0, 0, GRAPH_WIDTH*GRID, GRAPH_HEIGHT*GRID))
 
 channel = pygame.mixer.find_channel()
-i = 0
 running = True
+i = 0
 PAUSED = False
 while running:
     starttime = time()
@@ -430,6 +432,7 @@ while running:
                 stderr.write('Now playing: ' + str(m) + '\n')
 
             draw_controls()
+            draw_iterator(i)
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
@@ -442,6 +445,7 @@ while running:
                 curpos[0] = x/GRID - 16
                 curpos[1] = y/GRID
                 draw_controls()
+                draw_iterator(i)
 
         elif event.type == pygame.QUIT:
             with open(argv[1], 'w') as f:
