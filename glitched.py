@@ -383,7 +383,7 @@ while running:
                     mutedlines = mutedlines.difference([row])
                 else:
                     mutedlines = mutedlines.union([row])
-                m.tokens = m._tokenize_(m.lines[1:], [i-1 for i in mutedlines])
+                m.tokens = m._tokenize_(m.lines[1:], [n-1 for n in mutedlines])
                 m._reset_()
 
             if event.key in TEXT_KEYMAP.keys() or \
