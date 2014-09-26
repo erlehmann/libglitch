@@ -436,16 +436,14 @@ while running:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
-            x-=8
-            y-=8
             if x < GRAPH_WIDTH*GRID:
                 RENDER_WAVE = not RENDER_WAVE
                 RENDER_YPATTERN = not RENDER_YPATTERN
                 RENDER_VALUEPATTERN = not RENDER_VALUEPATTERN
                 RENDER_STACK = not RENDER_STACK
             else:
-                curpos[0] = x/GRID - 16
-                curpos[1] = y/GRID
+                curpos[0] = int(x/GRID - 16)
+                curpos[1] = int(y/GRID)
                 draw_controls()
                 draw_iterator(i)
 
