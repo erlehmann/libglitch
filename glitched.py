@@ -207,7 +207,7 @@ def draw_valuepattern(buf, target, drop_frame=False):
     global valuepattern
     if not drop_frame:
         for x, y in enumerate(buf):
-            valuepattern.set_at((127, 127-x/2), (y, y, y))
+            valuepattern.set_at((127, int(127-x/2)), (y, y, y))
     target.fill((133, 153, 0))  # Solarized Green
     target.blit(valuepattern, (0, 0), (0, 0, 128, 128), pygame.BLEND_ADD)
     valuepattern.scroll(-1, 0)
@@ -301,7 +301,7 @@ def draw_graph(buf, stack, t, drop_frame=False):
     if RENDER_STACK:
         draw_stack(stack, graph, drop_frame)
 
-    for b in [buf[i:i+256] for i in xrange(0, len(buf), 256)]:
+    for b in [buf[i:i+256] for i in range(0, len(buf), 256)]:
         if RENDER_VALUEPATTERN:
             draw_valuepattern(b, graph, drop_frame)
         if RENDER_YPATTERN:
@@ -322,7 +322,7 @@ PAUSED = False
 while running:
     starttime = time()
     if (channel.get_queue() == None and not PAUSED):  # no excess output
-        buf = [m._compute_(j) for j in xrange(i, i+BUFSIZE)]
+        buf = [m._compute_(j) for j in range(i, i+BUFSIZE)]
         sound = pygame.sndarray.make_sound(numpy.array(buf, numpy.uint8))
         channel.queue(sound)
         i += BUFSIZE
@@ -388,24 +388,24 @@ while running:
                 m.tokens = m._tokenize_(m.lines[1:], [n-1 for n in mutedlines])
                 m._reset_()
 
-            if event.key in TEXT_KEYMAP.keys() or \
-                event.key in OPCODE_KEYMAP.keys() or \
+            if event.key in list(TEXT_KEYMAP.keys()) or \
+                event.key in list(OPCODE_KEYMAP.keys()) or \
                 event.key == pygame.K_PAGEUP or \
                 event.key == pygame.K_PAGEDOWN:
                 column = curpos[0]
                 row = curpos[1]
-                line = m.lines[row]
-                char = line[column]
+                line = m.lines[int(row)]
+                char = line[int(column)]
 
                 if (row == 0) and (
-                    event.key in TEXT_KEYMAP.keys() or \
+                    event.key in list(TEXT_KEYMAP.keys()) or \
                     event.key == pygame.K_PAGEUP or \
                     event.key == pygame.K_PAGEDOWN
                     ):
                     KEYMAP = TEXT_KEYMAP
                     KEYORDER = TEXT_ORDER
                 elif (row > 0) and (
-                    event.key in OPCODE_KEYMAP.keys() or \
+                    event.key in list(OPCODE_KEYMAP.keys()) or \
                     event.key == pygame.K_PAGEUP or \
                     event.key == pygame.K_PAGEDOWN
                     ):
@@ -426,7 +426,7 @@ while running:
                         index = (KEYORDER.find(char) + 1) % len(KEYORDER)
                         newchar = KEYORDER[index]
 
-                m.lines[row] = line[:column] + newchar + line[column+1:]
+                m.lines[int(row)] = line[:int(column)] + newchar + line[int(column)+1:]
                 m.tokens = m._tokenize_(m.lines[1:], mutedlines)
                 m._reset_()
                 stderr.write('Now playing: ' + str(m) + '\n')
@@ -436,6 +436,8 @@ while running:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
+            x-=8
+            y-=8
             if x < GRAPH_WIDTH*GRID:
                 RENDER_WAVE = not RENDER_WAVE
                 RENDER_YPATTERN = not RENDER_YPATTERN
