@@ -115,7 +115,7 @@ class Melody:
                 b = stack[-1]
                 stack.rotate(1)
                 try:
-                    stack.append((b / a) & MAXINT)
+                    stack.append(int(b / a) & MAXINT)
                 except ZeroDivisionError:
                     stack.append(0)
 
